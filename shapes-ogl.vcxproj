@@ -73,28 +73,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\polyu\OneDrive\Desktop\CPlusPlusProjects\shapes-ogl\Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\polyu\OneDrive\Desktop\CPlusPlusProjects\shapes-ogl\Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\polyu\OneDrive\Desktop\CPlusPlusProjects\shapes-ogl\Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\polyu\OneDrive\Desktop\CPlusPlusProjects\shapes-ogl\Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -104,8 +104,8 @@
       <AdditionalDependencies>freeglut.lib;glew32.lib;glew32s.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)Dependencies\freeglut\bin\$(Platform)\freeglut.dll" "$(OutDIr)"
-copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" "$(OutDIr)"</Command>
+      <Command>copy "$(SolutionDir)Dependencies\freeglut\bin\$(Platform)\freeglut.dll" "$(OutDir)"
+copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,7 +114,7 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -126,15 +126,15 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
       <AdditionalDependencies>freeglut.lib;glew32.lib;glew32s.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)Dependencies\freeglut\bin\$(Platform)\freeglut.dll" "$(OutDIr)"
-copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" "$(OutDIr)"</Command>
+      <Command>copy "$(SolutionDir)Dependencies\freeglut\bin\$(Platform)\freeglut.dll" "$(OutDir)"
+copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <TreatWarningAsError>true</TreatWarningAsError>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -146,8 +146,8 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
       <AdditionalDependencies>freeglut.lib;glew32.lib;glew32s.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)Dependencies\freeglut\bin\$(Platform)\freeglut.dll" "$(OutDIr)"
-copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" "$(OutDIr)"</Command>
+      <Command>copy "$(SolutionDir)Dependencies\freeglut\bin\$(Platform)\freeglut.dll" "$(OutDir)"
+copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,7 +156,7 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <TreatWarningAsError>true</TreatWarningAsError>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -170,8 +170,8 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
       <AdditionalDependencies>freeglut.lib;glew32.lib;glew32s.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)Dependencies\freeglut\bin\$(Platform)\freeglut.dll" "$(OutDIr)"
-copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" "$(OutDIr)"</Command>
+      <Command>copy "$(SolutionDir)Dependencies\freeglut\bin\$(Platform)\freeglut.dll" "$(OutDir)"
+copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
