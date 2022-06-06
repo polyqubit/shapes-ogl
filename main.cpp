@@ -6,8 +6,14 @@
 #include <string.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#define WINDOW_TITLE_PREFIX "Chapter 1"
+#define WINDOW_TITLE_PREFIX "OpenGL Window"
 unsigned framecount = 0;
+
+typedef struct
+{
+    float XYZW[4];
+    float RGBA[4];
+} Vertex;
 
 GLuint
 VertexShaderId,
@@ -15,8 +21,14 @@ FragmentShaderId,
 ProgramId,
 VaoId,
 VboId,
-ColorBufferId;
+BufferId,
+IndexBufferId[2],
+ActiveIndexBuffer = 0;
 
+int
+CurrentWidth = 600,
+CurrentHeight = 600,
+WindowHandle = 0;
 
 const GLchar* VertexShader =
 {
@@ -47,10 +59,6 @@ const GLchar* FragmentShader =
   "}\n"
 };
 
-int
-CurrentWidth = 800,
-CurrentHeight = 600,
-WindowHandle = 0;
 
 void Initialize(int, char* []);
 void InitWindow(int, char* []);
@@ -58,6 +66,7 @@ void ResizeFunction(int, int);
 void RenderFunction(void);
 void TimerFunction(int);
 void IdleFunction(void);
+void KeyboardFunction(unsigned char, int, int);
 void Cleanup(void);
 void CreateVBO(void);
 void DestroyVBO(void);
@@ -126,6 +135,23 @@ void InitWindow(int argc, char* argv[])
     glutIdleFunc(IdleFunction);
     glutTimerFunc(0, TimerFunction, 0);
     glutCloseFunc(Cleanup);
+    glutKeyboardFunc(KeyboardFunction);
+}
+
+void KeyboardFunction(unsigned char Key, int X, int Y)
+{
+    switch (Key)
+    {
+    case 'T':
+    case 't':
+    {
+        ActiveIndexBuffer = (ActiveIndexBuffer == 1 ? 0 : 1);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferId[ActiveIndexBuffer]);
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 void ResizeFunction(int Width, int Height)
@@ -143,7 +169,12 @@ void RenderFunction(void)
     // clears buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    if (ActiveIndexBuffer == 0) {
+        glDrawElements(GL_TRIANGLE_STRIP, 12, GL_UNSIGNED_BYTE, NULL);
+    }
+    else {
+        glDrawElements(GL_TRIANGLE_STRIP, 12, GL_UNSIGNED_BYTE, NULL);
+    }
 
     glutSwapBuffers();
     glutPostRedisplay();
@@ -185,56 +216,136 @@ void Cleanup(void)
 
 void CreateVBO(void)
 {
-    GLfloat Vertices[] = { // x, y, depth, w
-      -0.8f,  0.8f, 0.0f, 1.0f,
-       0.8f,  0.8f, 0.0f, 1.0f,
-      -0.8f, -0.8f, 0.0f, 1.0f,
+    //Vertex Vertices[] =
+    //{
+    //    { { 0.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f } },
+    //    // Top
+    //    { { -0.2f, 0.8f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+    //    { { 0.2f, 0.8f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+    //    { { 0.0f, 0.8f, 0.0f, 1.0f }, { 0.0f, 1.0f, 1.0f, 1.0f } },
+    //    { { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+    //    // Bottom
+    //    { { -0.2f, -0.8f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+    //    { { 0.2f, -0.8f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+    //    { { 0.0f, -0.8f, 0.0f, 1.0f }, { 0.0f, 1.0f, 1.0f, 1.0f } },
+    //    { { 0.0f, -1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+    //    // Left
+    //    { { -0.8f, -0.2f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+    //    { { -0.8f, 0.2f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+    //    { { -0.8f, 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 1.0f, 1.0f } },
+    //    { { -1.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+    //    // Right
+    //    { { 0.8f, -0.2f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+    //    { { 0.8f, 0.2f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+    //    { { 0.8f, 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 1.0f, 1.0f } },
+    //    { { 1.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } }
+    //};
 
-      -0.8f, -0.8f, 0.0f, 1.0f,
-       0.8f,  0.8f, 0.0f, 1.0f,
-       0.8f, -0.8f, 0.0f, 1.0f
+    Vertex Vertices[] = {
+        // Front Face
+        { { -0.2f, 0.2f, 0.2f, 1.0f  }, { 1.0f, 1.0f, 0.0f, 1.0f } },
+        { { 0.2f, 0.2f, 0.2f, 1.0f  }, { 1.0f, 1.0f, 0.0f, 1.0f } },
+        { { -0.2f, -0.2f, 0.2f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
+        { { 0.2f, -0.2f, 0.2f, 1.0f  }, { 1.0f, 1.0f, 0.0f, 1.0f } },
+        // Back Face
+        { { 0.0f, 0.4f, -0.2f, 1.0f  }, { 0.0f, 1.0f, 1.0f, 1.0f } },
+        { { 0.4f, 0.4f, -0.2f, 1.0f  }, { 0.0f, 1.0f, 1.0f, 1.0f } },
+        { { 0.0f, 0.0f, -0.2f, 1.0f }, { 0.0f, 1.0f, 1.0f, 1.0f } },
+        { { 0.4f, 0.0f, -0.2f, 1.0f  }, { 0.0f, 1.0f, 1.0f, 1.0f } }
     };
 
-    GLfloat Colors[] = { // r, g, b, a
-      1.0f, 0.0f, 0.0f, 1.0f,
-      0.0f, 1.0f, 0.0f, 1.0f,
-      0.0f, 0.0f, 1.0f, 1.0f,
+    //GLubyte Indices[] = {
+    //    // Top
+    //    0, 1, 3,
+    //    0, 3, 2,
+    //    3, 1, 4,
+    //    3, 4, 2,
+    //    // Bottom
+    //    0, 5, 7,
+    //    0, 7, 6,
+    //    7, 5, 8,
+    //    7, 8, 6,
+    //    // Left
+    //    0, 9, 11,
+    //    0, 11, 10,
+    //    11, 9, 12,
+    //    11, 12, 10,
+    //    // Right
+    //    0, 13, 15,
+    //    0, 15, 14,
+    //    15, 13, 16,
+    //    15, 16, 14
+    //};
 
-      0.0f, 0.0f, 1.0f, 1.0f,
-      0.0f, 1.0f, 0.0f, 1.0f,
-      1.0f, 1.0f, 1.0f, 1.0f
+    GLubyte Indices[] = {
+        // Front
+        0, 1, 2,
+        1, 2, 3,
+        // Back
+        4, 5, 6,
+        5, 6, 7
+    };
+
+    //GLubyte AlternateIndices[] = {
+    //    // Outer square border:
+    //    3, 4, 16,
+    //    3, 15, 16,
+    //    15, 16, 8,
+    //    15, 7, 8,
+    //    7, 8, 12,
+    //    7, 11, 12,
+    //    11, 12, 4,
+    //    11, 3, 4,
+
+    //    // Inner square
+    //    0, 11, 3,
+    //    0, 3, 15,
+    //    0, 15, 7,
+    //    0, 7, 11
+    //};
+
+    GLubyte AlternateIndices[] = {
+        // Top
+        4, 5, 0,
+        5, 0, 1,
+        // Bottom
+        6, 7, 2,
+        7, 2, 3
     };
 
     GLenum ErrorCheckValue = glGetError();
+    const size_t BufferSize = sizeof(Vertices);
+    const size_t VertexSize = sizeof(Vertices[0]);
+    const size_t RgbOffset = sizeof(Vertices[0].XYZW);
+
+    glGenBuffers(1, &VboId);
 
     glGenVertexArrays(1, &VaoId);
     glBindVertexArray(VaoId);
 
-    glGenBuffers(1, &VboId);
     glBindBuffer(GL_ARRAY_BUFFER, VboId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(
-        0,        // index: defined in the shader's location
-        4,        // number of components of vertices(x,y,z,w)
-        GL_FLOAT, // datatype of components
-        GL_FALSE, // whether to normalize values(only ints)
-        0,        // how many bytes between significant blocks of data(user-defined structures)
-        0         // how far apart blocks of data are
-    );
-    glEnableVertexAttribArray(0);
+    glBufferData(GL_ARRAY_BUFFER, BufferSize, Vertices, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &ColorBufferId);
-    glBindBuffer(GL_ARRAY_BUFFER, ColorBufferId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Colors), Colors, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, VertexSize, 0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VertexSize, (GLvoid*)RgbOffset);
+
+    glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+
+    glGenBuffers(2, IndexBufferId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferId[0]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferId[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(AlternateIndices), AlternateIndices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferId[0]);
 
     ErrorCheckValue = glGetError();
     if (ErrorCheckValue != GL_NO_ERROR)
     {
         fprintf(
             stderr,
-            "ERROR: Could not create a VBO: %s \n",
+            "ERROR: Could not create a VBO: %s\n",
             gluErrorString(ErrorCheckValue)
         );
 
@@ -250,8 +361,10 @@ void DestroyVBO(void)
     glDisableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDeleteBuffers(1, &ColorBufferId);
     glDeleteBuffers(1, &VboId);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glDeleteBuffers(2, IndexBufferId);
 
     glBindVertexArray(0);
     glDeleteVertexArrays(1, &VaoId);
