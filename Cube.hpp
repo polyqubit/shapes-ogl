@@ -1,7 +1,7 @@
 #pragma once
 #include "Utils.h"
 
-enum class TFenum { // transform enum
+enum class ROTenum { // rotation enum
 
 };
 
@@ -11,7 +11,7 @@ public:
 	Cube();
 	~Cube();
 	void create(Vertex v[8]);
-    void transform(TFenum t, );
+    void transform(ROTenum r, float angle);
     void draw();
     void destroy();
 private:

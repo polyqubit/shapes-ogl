@@ -283,7 +283,7 @@ void DrawCube(void)
     glBindVertexArray(BufferIds[0]);
     ExitOnGLError("ERROR: Could not bind the VAO for drawing purposes");
 
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);
+    glDrawElements(GL_LINE_LOOP, 36, GL_UNSIGNED_INT, (GLvoid*)0);
     ExitOnGLError("ERROR: Could not draw the cube");
 
     glBindVertexArray(0);
