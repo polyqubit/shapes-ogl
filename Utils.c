@@ -1,4 +1,4 @@
-#include "Utils.hpp"
+#include "Utils.h"
 
 const Matrix IDENTITY_MATRIX = { {
   1, 0, 0, 0,
