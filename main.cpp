@@ -12,6 +12,7 @@ GLuint
 ProjectionMatrixUniformLocation,
 ViewMatrixUniformLocation,
 ModelMatrixUniformLocation,
+TimeColorLocation,
 BufferIds[3] = { 0 },
 ShaderIds[3] = { 0 };
 
@@ -208,12 +209,17 @@ void CreateCube()
         glAttachShader(ShaderIds[0], ShaderIds[1]);
         glAttachShader(ShaderIds[0], ShaderIds[2]);
     }
+
     glLinkProgram(ShaderIds[0]);
     ExitOnGLError("ERROR: Could not link the shader program");
+
+    glUseProgram(ShaderIds[0]);
+    ExitOnGLError("ERROR: Could not use the shader program");
 
     ModelMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ModelMatrix");
     ViewMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ViewMatrix");
     ProjectionMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ProjectionMatrix");
+    TimeColorLocation = glGetUniformLocation(ShaderIds[0], "TimeColor");
     ExitOnGLError("ERROR: Could not get shader uniform locations");
 
     glGenVertexArrays(1, &BufferIds[0]);
@@ -259,8 +265,11 @@ void DestroyCube()
 
 void DrawCube(void)
 {
-    float CubeAngle;
     clock_t Now = clock();
+    float CubeAngle;
+    float tr = abs((float)sin(1+glutGet(GLUT_ELAPSED_TIME) / 250.0f)) / 1.1f;
+    float tg = abs((float)sin(2+glutGet(GLUT_ELAPSED_TIME) / 250.0f)) / 1.1f;
+    float tb = abs((float)sin(3+glutGet(GLUT_ELAPSED_TIME) / 200.0f)) / 1.1f;
 
     if (LastTime == 0)
         LastTime = Now;
@@ -272,18 +281,20 @@ void DrawCube(void)
     ModelMatrix = IDENTITY_MATRIX;
     RotateAboutY(&ModelMatrix, CubeAngle);
     RotateAboutX(&ModelMatrix, CubeAngle);
+    RotateAboutZ(&ModelMatrix, CubeAngle);
 
     glUseProgram(ShaderIds[0]);
     ExitOnGLError("ERROR: Could not use the shader program");
 
     glUniformMatrix4fv(ModelMatrixUniformLocation, 1, GL_FALSE, ModelMatrix.m);
     glUniformMatrix4fv(ViewMatrixUniformLocation, 1, GL_FALSE, ViewMatrix.m);
+    glUniform4f(TimeColorLocation, tr, tg, tb, 1.0f);
     ExitOnGLError("ERROR: Could not set the shader uniforms");
 
     glBindVertexArray(BufferIds[0]);
     ExitOnGLError("ERROR: Could not bind the VAO for drawing purposes");
 
-    glDrawElements(GL_LINE_LOOP, 36, GL_UNSIGNED_INT, (GLvoid*)0);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);
     ExitOnGLError("ERROR: Could not draw the cube");
 
     glBindVertexArray(0);
