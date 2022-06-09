@@ -1,7 +1,9 @@
 #include "Shader.h"
+#include "Utils.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
+	GLenum err = glewInit();
 	// 1. retrieve the vertex/fragment source code from filePath
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -34,13 +36,14 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	const char* fShaderCode = fragmentCode.c_str();
 
 	// 2. compile shaders
-	unsigned int vertex, fragment;
+	GLuint vertex, fragment;
 	int success;
 	char infoLog[512];
 
 	// vertex Shader
 	vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vShaderCode, NULL);
+	//vertex = LoadShader("VertexShader.glsl", GL_VERTEX_SHADER);
 	glCompileShader(vertex);
 
 	// print compile errors if any

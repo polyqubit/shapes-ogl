@@ -18,29 +18,29 @@
     <ClCompile Include="Utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleShader.vertex.glsl">
+    <ClCompile Include="VertexShader.glsl">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleShader.fragment.glsl">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="FragmentShader.glsl">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Utils.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="oldmain.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="oldmain2.txt">
       <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>

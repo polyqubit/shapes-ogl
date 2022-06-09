@@ -25,6 +25,8 @@ ModelMatrix;
 float CubeRotation = 0;
 clock_t LastTime = 0;
 
+Shader shaders("VertexShader.glsl","FragmentShader.glsl");
+
 void Initialize(int, char* []);
 void InitWindow(int, char* []);
 void ResizeFunction(int, int);
@@ -202,13 +204,11 @@ void CreateCube()
       7,5,6,  7,4,5
     };
 
-    Shader shaders("VertexShader.glsl", "FragmentShader.glsl");
-
     ShaderIds[0] = glCreateProgram();
     ExitOnGLError("ERROR: Could not create the shader program");
     {
-        ShaderIds[1] = LoadShader("FragmendShader.glsl", GL_FRAGMENT_SHADER);
-        ShaderIds[2] = LoadShader("VertexShader.glsl", GL_VERTEX_SHADER);
+        ShaderIds[1] = LoadShader("SimpleShader.fragment.glsl", GL_FRAGMENT_SHADER);
+        ShaderIds[2] = LoadShader("SimpleShader.vertex.glsl", GL_VERTEX_SHADER);
         glAttachShader(ShaderIds[0], ShaderIds[1]);
         glAttachShader(ShaderIds[0], ShaderIds[2]);
     }
