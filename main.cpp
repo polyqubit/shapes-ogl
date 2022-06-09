@@ -9,20 +9,6 @@ WindowHandle = 0;
 
 unsigned FrameCount = 0;
 
-GLuint
-ProjectionMatrixUniformLocation,
-ViewMatrixUniformLocation,
-ModelMatrixUniformLocation,
-TimeColorLocation,
-BufferIds[3] = { 0 },
-ShaderIds[3] = { 0 };
-
-Matrix
-ProjectionMatrix,
-ViewMatrix,
-ModelMatrix;
-
-float CubeRotation = 0;
 clock_t LastTime = 0;
 
 void Initialize(int, char* []);
@@ -31,9 +17,6 @@ void ResizeFunction(int, int);
 void RenderFunction(void);
 void TimerFunction(int);
 void IdleFunction(void);
-void CreateCube(void);
-void DestroyCube(void);
-void DrawCube(void);
 
 int main(int argc, char* argv[])
 {
@@ -79,13 +62,6 @@ void Initialize(int argc, char* argv[])
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
     ExitOnGLError("ERROR: Could not set OpenGL culling options");
-
-    ModelMatrix = IDENTITY_MATRIX;
-    ProjectionMatrix = IDENTITY_MATRIX;
-    ViewMatrix = IDENTITY_MATRIX;
-    TranslateMatrix(&ViewMatrix, 0, 0, -2);
-
-    CreateCube();
 }
 
 void InitWindow(int argc, char* argv[])
@@ -119,7 +95,6 @@ void InitWindow(int argc, char* argv[])
     glutDisplayFunc(RenderFunction);
     glutIdleFunc(IdleFunction);
     glutTimerFunc(0, TimerFunction, 0);
-    glutCloseFunc(DestroyCube);
 }
 
 void ResizeFunction(int Width, int Height)
@@ -127,16 +102,6 @@ void ResizeFunction(int Width, int Height)
     CurrentWidth = Width;
     CurrentHeight = Height;
     glViewport(0, 0, CurrentWidth, CurrentHeight);
-    ProjectionMatrix =
-        CreateProjectionMatrix(
-            60,
-            (float)CurrentWidth / CurrentHeight,
-            1.0f,
-            100.0f
-        );
-
-    glUseProgram(ShaderIds[0]);
-    glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, ProjectionMatrix.m);
     glUseProgram(0);
 }
 
@@ -145,8 +110,6 @@ void RenderFunction(void)
     ++FrameCount;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    DrawCube();
 
     glutSwapBuffers();
 }
@@ -176,130 +139,4 @@ void TimerFunction(int Value)
 
     FrameCount = 0;
     glutTimerFunc(250, TimerFunction, 1);
-}
-
-void CreateCube()
-{
-    const Vertex VERTICES[8] =
-    {
-      { { -.5f, -.5f,  .5f, 1 }, { 0, 1, 1, 1 } },
-      { { -.5f,  .5f,  .5f, 1 }, { 0, 1, 1, 1 } },
-      { {  .5f,  .5f,  .5f, 1 }, { 0, 1, 1, 1 } },
-      { {  .5f, -.5f,  .5f, 1 }, { 1, 1, 0, 1 } },
-      { { -.5f, -.5f, -.5f, 1 }, { 1, 1, 0, 1 } },
-      { { -.5f,  .5f, -.5f, 1 }, { 1, 1, 0, 1 } },
-      { {  .5f,  .5f, -.5f, 1 }, { 1, 0, 1, 1 } },
-      { {  .5f, -.5f, -.5f, 1 }, { 0, 0.5, 1, 1 } }
-    };
-
-    const GLuint INDICES[36] =
-    {
-      0,2,1,  0,3,2,
-      4,3,0,  4,7,3,
-      4,1,5,  4,0,1,
-      3,6,2,  3,7,6,
-      1,6,5,  1,2,6,
-      7,5,6,  7,4,5
-    };
-
-    Shader shaders("VertexShader.glsl", "FragmentShader.glsl");
-
-    ShaderIds[0] = glCreateProgram();
-    ExitOnGLError("ERROR: Could not create the shader program");
-    {
-        ShaderIds[1] = LoadShader("FragmendShader.glsl", GL_FRAGMENT_SHADER);
-        ShaderIds[2] = LoadShader("VertexShader.glsl", GL_VERTEX_SHADER);
-        glAttachShader(ShaderIds[0], ShaderIds[1]);
-        glAttachShader(ShaderIds[0], ShaderIds[2]);
-    }
-
-    glLinkProgram(ShaderIds[0]);
-    ExitOnGLError("ERROR: Could not link the shader program");
-
-    glUseProgram(ShaderIds[0]);
-    ExitOnGLError("ERROR: Could not use the shader program");
-
-    ModelMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ModelMatrix");
-    ViewMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ViewMatrix");
-    ProjectionMatrixUniformLocation = glGetUniformLocation(ShaderIds[0], "ProjectionMatrix");
-    TimeColorLocation = glGetUniformLocation(ShaderIds[0], "TimeColor");
-    ExitOnGLError("ERROR: Could not get shader uniform locations");
-
-    glGenVertexArrays(1, &BufferIds[0]);
-    ExitOnGLError("ERROR: Could not generate the VAO");
-    glBindVertexArray(BufferIds[0]);
-    ExitOnGLError("ERROR: Could not bind the VAO");
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    ExitOnGLError("ERROR: Could not enable vertex attributes");
-
-    glGenBuffers(2, &BufferIds[1]);
-    ExitOnGLError("ERROR: Could not generate the buffer objects");
-
-    glBindBuffer(GL_ARRAY_BUFFER, BufferIds[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(VERTICES), VERTICES, GL_STATIC_DRAW);
-    ExitOnGLError("ERROR: Could not bind the VBO to the VAO");
-
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VERTICES[0]), (GLvoid*)0);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VERTICES[0]), (GLvoid*)sizeof(VERTICES[0].Position));
-    ExitOnGLError("ERROR: Could not set VAO attributes");
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[2]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INDICES), INDICES, GL_STATIC_DRAW);
-    ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
-
-    glBindVertexArray(0);
-}
-
-void DestroyCube()
-{
-    glDetachShader(ShaderIds[0], ShaderIds[1]);
-    glDetachShader(ShaderIds[0], ShaderIds[2]);
-    glDeleteShader(ShaderIds[1]);
-    glDeleteShader(ShaderIds[2]);
-    glDeleteProgram(ShaderIds[0]);
-    ExitOnGLError("ERROR: Could not destroy the shaders");
-
-    glDeleteBuffers(2, &BufferIds[1]);
-    glDeleteVertexArrays(1, &BufferIds[0]);
-    ExitOnGLError("ERROR: Could not destroy the buffer objects");
-}
-
-void DrawCube(void)
-{
-    clock_t Now = clock();
-    float CubeAngle;
-    float tr = abs((float)sin(1+glutGet(GLUT_ELAPSED_TIME) / 250.0f)) / 1.1f;
-    float tg = abs((float)sin(2+glutGet(GLUT_ELAPSED_TIME) / 250.0f)) / 1.1f;
-    float tb = abs((float)sin(3+glutGet(GLUT_ELAPSED_TIME) / 200.0f)) / 1.1f;
-
-    if (LastTime == 0)
-        LastTime = Now;
-
-    CubeRotation += 90.0f * ((float)(Now - LastTime) / CLOCKS_PER_SEC);
-    CubeAngle = DegreesToRadians(CubeRotation);
-    LastTime = Now;
-
-    ModelMatrix = IDENTITY_MATRIX;
-    RotateAboutY(&ModelMatrix, CubeAngle);
-    RotateAboutX(&ModelMatrix, CubeAngle);
-    RotateAboutZ(&ModelMatrix, CubeAngle);
-
-    glUseProgram(ShaderIds[0]);
-    ExitOnGLError("ERROR: Could not use the shader program");
-
-    glUniformMatrix4fv(ModelMatrixUniformLocation, 1, GL_FALSE, ModelMatrix.m);
-    glUniformMatrix4fv(ViewMatrixUniformLocation, 1, GL_FALSE, ViewMatrix.m);
-    glUniform4f(TimeColorLocation, tr, tg, tb, 1.0f);
-    ExitOnGLError("ERROR: Could not set the shader uniforms");
-
-    glBindVertexArray(BufferIds[0]);
-    ExitOnGLError("ERROR: Could not bind the VAO for drawing purposes");
-
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (GLvoid*)0);
-    ExitOnGLError("ERROR: Could not draw the cube");
-
-    glBindVertexArray(0);
-    glUseProgram(0);
 }
