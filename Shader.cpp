@@ -1,6 +1,9 @@
 #include "Shader.h"
 #include "Utils.h"
 
+Shader::Shader(void) {
+}
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
 	// 1. retrieve the vertex/fragment source code from filePath
@@ -87,6 +90,15 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 void Shader::use()
 {
 	glUseProgram(ID);
+}
+
+void Shader::destroy()
+{
+	glDetachShader(ShaderIds[0], ShaderIds[1]);
+	glDetachShader(ShaderIds[0], ShaderIds[2]);
+	glDeleteShader(ShaderIds[1]);
+	glDeleteShader(ShaderIds[2]);
+	glDeleteProgram(ShaderIds[0]);
 }
 
 void Shader::setBool(const std::string& name, bool value) const

@@ -13,6 +13,8 @@ unsigned FrameCount = 0;
 
 clock_t LastTime = 0;
 
+Shader shaders;
+
 void Initialize(int, char* []);
 void InitWindow(int, char* []);
 void ResizeFunction(int, int);
@@ -29,6 +31,7 @@ int main(int argc, char* argv[])
 
     glutMainLoop();
 
+    DeleteObj();
     exit(EXIT_SUCCESS);
 }
 
@@ -67,6 +70,8 @@ void Initialize(int argc, char* argv[])
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
     ExitOnGLError("ERROR: Could not set OpenGL culling options");
+
+    CreateObj();
 }
 
 void InitWindow(int argc, char* argv[])
@@ -116,6 +121,8 @@ void RenderFunction(void)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    DrawObj();
+
     glutSwapBuffers();
 }
 
@@ -161,8 +168,7 @@ void CreateObj(void) {
       1,2,3
     };
 
-    Shader shaders("VertexShader.glsl","FragmentShader.glsl");
-    shaders.use();
+    shaders = Shader("VertexShader.glsl","FragmentShader.glsl");
 
     glGenVertexArrays(1, &BufferIds[0]);
     ExitOnGLError("ERROR: Could not generate the VAO");
@@ -192,9 +198,14 @@ void CreateObj(void) {
 }
 
 void DrawObj(void) {
-
+    shaders.use();
+    glBindVertexArray(BufferIds[0]);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
 
 void DeleteObj(void) {
-
+    glDeleteBuffers(2, &BufferIds[1]);
+    glDeleteVertexArrays(1, &BufferIds[0]);
+    ExitOnGLError("ERROR: Could not destroy the buffer objects");
 }
