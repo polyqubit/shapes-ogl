@@ -92,15 +92,6 @@ void Shader::use()
 	glUseProgram(ID);
 }
 
-void Shader::destroy()
-{
-	glDetachShader(ShaderIds[0], ShaderIds[1]);
-	glDetachShader(ShaderIds[0], ShaderIds[2]);
-	glDeleteShader(ShaderIds[1]);
-	glDeleteShader(ShaderIds[2]);
-	glDeleteProgram(ShaderIds[0]);
-}
-
 void Shader::setBool(const std::string& name, bool value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);

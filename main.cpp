@@ -1,5 +1,6 @@
 #include "Utils.h"
 #include "Shader.h"
+#define STB_IMAGE_IMPLEMENTATION
 #define WINDOW_TITLE_PREFIX "OpenGL Window"
 
 int
@@ -161,6 +162,8 @@ void CreateObj(void) {
       { { -.5f, -.5f, 0, 1 }, { 0, 1, 1, 1 } },
       { {  .5f, -.5f, 0, 1 }, { 1, 1, 0, 1 } }
     };
+
+    // const Vertex CORNERS[4];
 
     const GLuint INDICES[6] =
     {
