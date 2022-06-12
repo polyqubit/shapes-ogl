@@ -206,7 +206,7 @@ void CreateObj(void) {
 void DrawObj(void) {
     shaders.use();
     angle += 1.0f;
-    float sinangle = sin(angle/10.0f);
+    float sinangle = abs(sin(angle/64.0f))*1.5f;
     glm::mat4 trans = glm::mat4(1.0f);
     trans = glm::rotate(trans, glm::radians(angle), glm::vec3(0.0, 0.0, 1.0));
     trans = glm::scale(trans, glm::vec3(sinangle,sinangle,sinangle));
