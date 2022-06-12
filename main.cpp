@@ -9,6 +9,8 @@ CurrentWidth = 800,
 CurrentHeight = 600,
 WindowHandle = 0;
 
+float angle = 0;
+
 GLuint BufferIds[3] = { 0 };
 
 unsigned FrameCount = 0;
@@ -29,11 +31,6 @@ void DeleteObj(void);
 
 int main(int argc, char* argv[])
 {
-    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-    vec = trans * vec;
-    std::cout << vec.x << vec.y << vec.z << std::endl;
     Initialize(argc, argv);
 
     glutMainLoop();
@@ -208,7 +205,14 @@ void CreateObj(void) {
 
 void DrawObj(void) {
     shaders.use();
+    angle += 1.0f;
+    float sinangle = sin(angle/10.0f);
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(angle), glm::vec3(0.0, 0.0, 1.0));
+    trans = glm::scale(trans, glm::vec3(sinangle,sinangle,sinangle));
+
     glBindVertexArray(BufferIds[0]);
+    shaders.setMat4("transform", trans);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
