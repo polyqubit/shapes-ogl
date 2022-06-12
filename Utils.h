@@ -7,6 +7,9 @@
 #include <time.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include "Dependencies/glm/glm.hpp"
+#include "Dependencies/glm/gtc/matrix_transform.hpp"
+#include "Dependencies/glm/gtc/type_ptr.hpp"
 
 static const double PI = 3.14159265358979323846;
 

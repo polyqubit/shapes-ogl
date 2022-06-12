@@ -1,5 +1,4 @@
 #include "Shader.h"
-#include "Utils.h"
 
 Shader::Shader(void) {
 }

@@ -1,6 +1,7 @@
 #include "Utils.h"
 #include "Shader.h"
 #define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #define WINDOW_TITLE_PREFIX "OpenGL Window"
 
 int
@@ -28,6 +29,11 @@ void DeleteObj(void);
 
 int main(int argc, char* argv[])
 {
+    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+    vec = trans * vec;
+    std::cout << vec.x << vec.y << vec.z << std::endl;
     Initialize(argc, argv);
 
     glutMainLoop();
@@ -157,10 +163,10 @@ void TimerFunction(int Value)
 void CreateObj(void) {
     const Vertex VERTICES[4] =
     {
-      { {  .5f,  .5f, 0, 1 }, { 0, 1, 1, 1 } },
-      { { -.5f,  .5f, 0, 1 }, { 0, 1, 1, 1 } },
-      { { -.5f, -.5f, 0, 1 }, { 0, 1, 1, 1 } },
-      { {  .5f, -.5f, 0, 1 }, { 1, 1, 0, 1 } }
+      { {  .5f,  .5f, 0, 1 }, { 1, 0.5, 1, 1 } },
+      { { -.5f,  .5f, 0, 1 }, { 0.5, 0.5, 1, 1 } },
+      { { -.5f, -.5f, 0, 1 }, { 0, 1, 0.5, 1 } },
+      { {  .5f, -.5f, 0, 1 }, { 1, 1, 0.25, 1 } }
     };
 
     // const Vertex CORNERS[4];
@@ -168,7 +174,7 @@ void CreateObj(void) {
     const GLuint INDICES[6] =
     {
       0,1,2,
-      1,2,3
+      2,3,0
     };
 
     shaders = Shader("VertexShader.glsl","FragmentShader.glsl");
