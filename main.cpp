@@ -75,9 +75,9 @@ void Initialize(int argc, char* argv[])
     glDepthFunc(GL_LESS);
     ExitOnGLError("ERROR: Could not set OpenGL depth testing options");
 
-    /*glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);*/
+    glFrontFace(GL_CCW);
     ExitOnGLError("ERROR: Could not set OpenGL culling options");
 
     CreateObj();
@@ -179,12 +179,12 @@ void CreateObj(void) {
     {
       0,1,2,
       0,3,4,
-      0,1,4,
-      0,3,5,
+      0,4,1,
+      0,5,3,
       0,2,5,
-      1,2,5,
+      1,5,2,
       1,4,5,
-      3,4,5
+      3,5,4
     };
 
     shaders = Shader("VertexShader.glsl","FragmentShader.glsl");
