@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <random>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
