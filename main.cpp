@@ -30,31 +30,9 @@ std::mt19937 gen(rd());
 std::uniform_real_distribution<> posDist(-1, 1);
 std::uniform_real_distribution<> rotDist(-1, 1);
 
-glm::vec3 posArr[] = {
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen)),
-	glm::vec3(posDist(gen), posDist(gen), posDist(gen))
-};
+glm::vec3 posArr[10];
 
-glm::vec3 rotArr[] = {
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-	glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen)),
-};
+glm::vec3 rotArr[10];
 
 void Initialize(int, char* []);
 void InitWindow(int, char* []);
@@ -218,6 +196,15 @@ void CreateObj(void) {
 	  1,4,5,
 	  3,5,4
 	};
+
+	int posAL = sizeof(posArr) / sizeof(glm::vec3);
+	int rotAL = sizeof(rotArr) / sizeof(glm::vec3);
+	for (unsigned int i = 0; i < posAL; i++) {
+		posArr[i] = glm::vec3(posDist(gen), posDist(gen), posDist(gen));
+	}
+	for (unsigned int i = 0; i < rotAL; i++) {
+		rotArr[i] = glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen));
+	}
 
 	shaders = Shader("VertexShader.glsl", "FragmentShader.glsl");
 	shaders.use();
