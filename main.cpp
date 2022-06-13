@@ -19,6 +19,11 @@ clock_t LastTime = 0;
 
 Shader shaders;
 
+glm::mat4 model = glm::mat4(1.0f); // use this to apply geometric transformations
+glm::mat4 view = glm::mat4(1.0f);
+glm::mat4 projection;
+
+
 void Initialize(int, char* []);
 void InitWindow(int, char* []);
 void ResizeFunction(int, int);
@@ -70,9 +75,9 @@ void Initialize(int argc, char* argv[])
     glDepthFunc(GL_LESS);
     ExitOnGLError("ERROR: Could not set OpenGL depth testing options");
 
-    glEnable(GL_CULL_FACE);
+    /*glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    glFrontFace(GL_CCW);*/
     ExitOnGLError("ERROR: Could not set OpenGL culling options");
 
     CreateObj();
@@ -158,23 +163,39 @@ void TimerFunction(int Value)
 }
 
 void CreateObj(void) {
-    const Vertex VERTICES[4] =
+    const Vertex VERTICES[6] =
     {
-      { {  .5f,  .5f, 0, 1 }, { 1, 0.5, 1, 1 } },
-      { { -.5f,  .5f, 0, 1 }, { 0.5, 0.5, 1, 1 } },
-      { { -.5f, -.5f, 0, 1 }, { 0, 1, 0.5, 1 } },
-      { {  .5f, -.5f, 0, 1 }, { 1, 1, 0.25, 1 } }
+      // front part (both are clockwise)
+      { { 0, 1, -.75,          1 }, { 1, 0.5, 1,    1 } },
+      { { .866f, -.5f, -.75,   1 }, { 1, 1, 0.5,    1 } },
+      { { -.866f, -.5f, -.75,  1 }, { 0.25, 1, 0.5, 1 } },
+      // back part
+      { { 0, 1, .75,           1 }, { 1, 0.5, 1,    1 } },
+      { { .866f, -.5f, .75,    1 }, { 1, 1, 0.5,    1 } },
+      { { -.866f, -.5f, .75 ,  1 }, { 0.25, 1, 0.5, 1 } }
     };
 
-    // const Vertex CORNERS[4];
-
-    const GLuint INDICES[6] =
+    const GLuint INDICES[24] =
     {
       0,1,2,
-      2,3,0
+      0,3,4,
+      0,1,4,
+      0,3,5,
+      0,2,5,
+      1,2,5,
+      1,4,5,
+      3,4,5
     };
 
     shaders = Shader("VertexShader.glsl","FragmentShader.glsl");
+
+    // model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    // scene moving away from camera = camera moving away from scene
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
 
     glGenVertexArrays(1, &BufferIds[0]);
     ExitOnGLError("ERROR: Could not generate the VAO");
@@ -207,13 +228,15 @@ void DrawObj(void) {
     shaders.use();
     angle += 1.0f;
     float sinangle = abs(sin(angle/64.0f))*1.5f;
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::rotate(trans, glm::radians(angle), glm::vec3(0.0, 0.0, 1.0));
-    trans = glm::scale(trans, glm::vec3(sinangle,sinangle,sinangle));
+    model = glm::rotate(model, glm::radians(1.0f), glm::vec3(-1.0, 1.0, 0.5));
+    //model = glm::scale(model, glm::vec3(sinangle,sinangle,sinangle));
 
     glBindVertexArray(BufferIds[0]);
-    shaders.setMat4("transform", trans);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    //shaders.setMat4("transform", trans);
+    shaders.setMat4("model", model);
+    shaders.setMat4("view", view);
+    shaders.setMat4("projection", projection);
+    glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, (GLvoid*)0);
     glBindVertexArray(0);
 }
 
