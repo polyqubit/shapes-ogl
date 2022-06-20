@@ -1,18 +1,12 @@
 #pragma once
 #include "Utils.h"
 
-enum class ROTenum { // rotation enum
-
-};
-
 class Cube
 {
-public: 
-	Cube();
-	~Cube();
-	void create(Vertex v[8]);
-    void transform(ROTenum r, float angle);
-    void draw();
+public:
+    Cube();
+    ~Cube();
+    void create(Vertex v[8]);
     void destroy();
 private:
     const GLuint INDICES[36] =
@@ -25,4 +19,3 @@ private:
       7,5,6,  7,4,5
     };
 };
-

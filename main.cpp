@@ -10,6 +10,7 @@ CurrentHeight = 900,
 WindowHandle = 0;
 
 float angle = 0;
+float movCam = 0;
 
 GLuint BufferIds[3] = { 0 };
 
@@ -28,18 +29,19 @@ glm::mat4 projection;
 std::random_device rd;
 std::mt19937 gen(rd());
 
-std::uniform_real_distribution<> posDist(-10, 10);
+std::uniform_real_distribution<> posDist(-5, 5);
 std::uniform_real_distribution<> rotDist(-1, 1);
 
-glm::vec3 posArr[5000];
+glm::vec3 posArr[100];
 
-glm::vec3 rotArr[5000];
+glm::vec3 rotArr[100];
 
 void Initialize(int, char* []);
 void InitWindow(int, char* []);
 void ResizeFunction(int, int);
 void RenderFunction(void);
 void TimerFunction(int);
+void KeyboardFunction(unsigned char, int, int);
 void IdleFunction(void);
 void CreateObj(void);
 void DrawObj(void);
@@ -123,6 +125,7 @@ void InitWindow(int argc, char* argv[])
 
 	glutReshapeFunc(ResizeFunction);
 	glutDisplayFunc(RenderFunction);
+	glutKeyboardFunc(KeyboardFunction);
 	glutIdleFunc(IdleFunction);
 	glutTimerFunc(0, TimerFunction, 0);
 }
@@ -144,6 +147,12 @@ void RenderFunction(void)
 	DrawObj();
 
 	glutSwapBuffers();
+}
+
+void KeyboardFunction(unsigned char Key, int X, int Y) {
+	switch (Key) {
+
+	}
 }
 
 void IdleFunction(void)
@@ -213,9 +222,9 @@ void CreateObj(void) {
 	// model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// scene moving away from camera = camera moving away from scene
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -30.0f));
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
 
-	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
 
 	shaders.setMat4("view", view);
 	shaders.setMat4("projection", projection);
@@ -252,9 +261,17 @@ void DrawObj(void) {
 	if (LastTime == 0)
 		LastTime = Now;
 
+	float number = ((float)(Now - LastTime) / CLOCKS_PER_SEC);
+	angle += 90.0f * number;
+	movCam += 1.0f * number;
 	// important: n * ((float)(Now - LastTime) / CLOCKS_PER_SEC
-	angle += 90.0f * ((float)(Now - LastTime) / CLOCKS_PER_SEC);
 	LastTime = Now;
+
+	const float radius = 20.0f;
+	float camX = sin(movCam) * radius;
+	float camZ = cos(movCam) * radius;
+	view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0),glm::vec3(1.0, 1.0, 1.0));
+
 	shaders.use();
 	//float sinangle = abs(sin(angle / 64.0f)) * 1.5f;
 	//model = glm::rotate(model, glm::radians(15.0f)/CLOCKS_PER_SEC, glm::vec3(-1.0, 1.0, 0.5));
@@ -265,8 +282,9 @@ void DrawObj(void) {
 	for (unsigned int i = 0; i < lengthA; i++) {
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, posArr[i]);
-		model = glm::rotate(model, glm::radians(i * 20.0f + angle), rotArr[i]);
+		//model = glm::rotate(model, glm::radians(i * 20.0f + angle), rotArr[i]);
 		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+		shaders.setMat4("view", view);
 		shaders.setMat4("model", model);
 		glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, (GLvoid*)0);
 	}
