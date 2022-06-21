@@ -9,6 +9,8 @@ CurrentWidth = 1200,
 CurrentHeight = 900,
 WindowHandle = 0;
 
+const float cameraSpeed = 0.1f;
+
 float angle = 0;
 float movCam = 0;
 
@@ -25,6 +27,9 @@ glm::mat4 model = glm::mat4(1.0f); // use this to apply geometric transformation
 glm::mat4 view = glm::mat4(1.0f);
 glm::mat4 projection;
 
+// identity matrix
+const glm::mat4 identity = glm::mat4(1.0f);
+
 // initialize random engine
 std::random_device rd;
 std::mt19937 gen(rd());
@@ -35,6 +40,11 @@ std::uniform_real_distribution<> rotDist(-1, 1);
 glm::vec3 posArr[100];
 
 glm::vec3 rotArr[100];
+
+// camera's coordinate system
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 void Initialize(int, char* []);
 void InitWindow(int, char* []);
@@ -149,9 +159,29 @@ void RenderFunction(void)
 	glutSwapBuffers();
 }
 
-void KeyboardFunction(unsigned char Key, int X, int Y) {
-	switch (Key) {
-
+void KeyboardFunction(unsigned char Key, int X, int Y)
+{
+	switch (Key) 
+	{
+		case 'W': case 'w': {
+			cameraPos += cameraSpeed * cameraFront;
+			break;
+		}
+		case 'A': case 'a': {
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			break;
+		}
+		case 'S': case 's': {
+			cameraPos -= cameraSpeed * cameraFront;
+			break;
+		}
+		case 'D': case 'd': {
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			break;
+		}
+		case 'Q': case 'q': {
+			break;
+		}
 	}
 }
 
@@ -221,8 +251,8 @@ void CreateObj(void) {
 
 	// model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-	// scene moving away from camera = camera moving away from scene
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
+	// set camera
+	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
 
@@ -267,10 +297,11 @@ void DrawObj(void) {
 	// important: n * ((float)(Now - LastTime) / CLOCKS_PER_SEC
 	LastTime = Now;
 
-	const float radius = 20.0f;
+	/*const float radius = 20.0f;
 	float camX = sin(movCam) * radius;
 	float camZ = cos(movCam) * radius;
-	view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0),glm::vec3(1.0, 1.0, 1.0));
+	view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0),glm::vec3(1.0, 1.0, 1.0));*/
+	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	shaders.use();
 	//float sinangle = abs(sin(angle / 64.0f)) * 1.5f;
