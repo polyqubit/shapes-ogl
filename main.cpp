@@ -133,6 +133,8 @@ void InitWindow(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	glutSetCursor(GLUT_CURSOR_NONE);
+
 	glutReshapeFunc(ResizeFunction);
 	glutDisplayFunc(RenderFunction);
 	glutKeyboardFunc(KeyboardFunction);
@@ -154,6 +156,8 @@ void RenderFunction(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glutWarpPointer(600, 450);
+
 	DrawObj();
 
 	glutSwapBuffers();
@@ -163,6 +167,10 @@ void KeyboardFunction(unsigned char Key, int X, int Y)
 {
 	switch (Key) 
 	{
+		case 27: {
+			glutDestroyWindow(glutGetWindow());
+			break;
+		}
 		case 'W': case 'w': {
 			cameraPos += cameraSpeed * cameraFront;
 			break;
