@@ -52,6 +52,7 @@ void ResizeFunction(int, int);
 void RenderFunction(void);
 void TimerFunction(int);
 void KeyboardFunction(unsigned char, int, int);
+void PassiveMovementFunction(int, int);
 void IdleFunction(void);
 void CreateObj(void);
 void DrawObj(void);
@@ -138,6 +139,7 @@ void InitWindow(int argc, char* argv[])
 	glutReshapeFunc(ResizeFunction);
 	glutDisplayFunc(RenderFunction);
 	glutKeyboardFunc(KeyboardFunction);
+	glutPassiveMotionFunc(PassiveMovementFunction);
 	glutIdleFunc(IdleFunction);
 	glutTimerFunc(0, TimerFunction, 0);
 }
@@ -155,6 +157,8 @@ void RenderFunction(void)
 	++FrameCount;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	std::cout << glutLayerGet(GLUT_LAYER_IN_USE);
 
 	glutWarpPointer(600, 450);
 
@@ -191,6 +195,12 @@ void KeyboardFunction(unsigned char Key, int X, int Y)
 			break;
 		}
 	}
+}
+
+void PassiveMovementFunction(int X, int Y)
+{
+	std::cout << glutLayerGet(GLUT_HAS_OVERLAY);
+	if (X != 600 || Y != 450) glutWarpPointer(600, 450);
 }
 
 void IdleFunction(void)
