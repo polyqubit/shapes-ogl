@@ -100,7 +100,7 @@
 #error glATI.h included before glew.h
 #endif
 
-#define __gl_h_
+//#define __gl_h_
 #define __gl2_h_
 #define __GL_H__
 #define _GL_H
