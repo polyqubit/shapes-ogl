@@ -8,7 +8,7 @@ GLFWwindow* window;
 
 void Initialize(void);
 //void InitWindow(int, char* []);
-void ResizeFunction(int, int);
+void ResizeFunction(GLFWwindow*, int, int);
 void RenderFunction(void);
 void TimerFunction(int);
 void KeyboardFunction(unsigned char, int, int);
@@ -22,6 +22,13 @@ int main(int argc, char* argv[])
 {
 	Initialize();
 
+	while (!glfwWindowShouldClose(window))
+	{
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }
 
@@ -47,4 +54,10 @@ void Initialize()
 		return;
 	}
 	glViewport(0, 0, 800, 600);
+	glfwSetFramebufferSizeCallback(window, ResizeFunction);
+}
+
+void ResizeFunction(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
 }
