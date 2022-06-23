@@ -10,6 +10,8 @@ unsigned frameCount = 0;
 
 float angle = 0;
 float movCam = 0;
+float cameraSpeed = 0;
+bool camMode = false;
 
 GLuint BufferIds[3] = { 0 };
 
@@ -17,6 +19,7 @@ unsigned FrameCount = 0;
 
 float CubeRotation = 0;
 clock_t LastTime = 0;
+clock_t LastTimeKey = 0;
 
 Shader shaders;
 
@@ -31,12 +34,12 @@ const glm::mat4 identity = glm::mat4(1.0f);
 std::random_device rd;
 std::mt19937 gen(rd());
 
-std::uniform_real_distribution<> posDist(-5, 5);
+std::uniform_real_distribution<> posDist(-15, 15);
 std::uniform_real_distribution<> rotDist(-1, 1);
 
-glm::vec3 posArr[100];
+glm::vec3 posArr[1000];
 
-glm::vec3 rotArr[100];
+glm::vec3 rotArr[1000];
 
 // camera's coordinate system
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
@@ -115,6 +118,18 @@ void Initialize()
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 	ExitOnGLError("ERROR: Could not set OpenGL culling options");
+
+	std::cout << "CONTROLS:\n";
+	std::cout << "W         FORWARD\n";
+	std::cout << "A         LEFT\n";
+	std::cout << "S         BACK\n";
+	std::cout << "D         RIGHT\n";
+	std::cout << "Q         ORBIT\n";
+	std::cout << "E         CONTROL\n";
+	std::cout << "UP        UP\n";
+	std::cout << "DOWN      DOWN\n";
+	std::cout << "LEFT      ROTATE LEFT\n";
+	std::cout << "RIGHT     ROTATE RIGHT\n";
 }
 
 void ResizeFunction(GLFWwindow* window, int width, int height)
@@ -135,8 +150,34 @@ void RenderFunction(GLFWwindow* window)
 
 void KeyboardFunction(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
+	clock_t Now = clock();
+	if (LastTimeKey == 0)
+		LastTimeKey = Now;
+	float number = ((float)(Now - LastTimeKey) / CLOCKS_PER_SEC);
+	cameraSpeed = 5 * number;
+	LastTimeKey = Now;
+
+	if ((glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) && !camMode)
+		camMode = true;
+	if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && camMode)
+		camMode = false;
+
+	if (!camMode) {
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, true);
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			cameraPos += cameraSpeed * cameraFront;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			cameraPos -= cameraSpeed * cameraFront;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+			cameraPos += cameraUp * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+			cameraPos -= cameraUp * cameraSpeed;
+	}
 }
 void CreateObj() {
 	const Vertex VERTICES[6] =
@@ -219,16 +260,20 @@ void DrawObj(void) {
 		LastTime = Now;
 
 	float number = ((float)(Now - LastTime) / CLOCKS_PER_SEC);
-	angle += 90.0f * number;
+	angle += 180.0f * number;
 	movCam += 1.0f * number;
 	// important: n * ((float)(Now - LastTime) / CLOCKS_PER_SEC
 	LastTime = Now;
 
-	/*const float radius = 20.0f;
-	float camX = sin(movCam) * radius;
-	float camZ = cos(movCam) * radius;
-	view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0),glm::vec3(1.0, 1.0, 1.0));*/
-	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	if (camMode) {
+		const float radius = 20.0f;
+		float camX = sin(glfwGetTime()) * radius;
+		float camZ = cos(glfwGetTime()) * radius;
+		view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+	}
+	else {
+		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	}
 
 	shaders.use();
 	//float sinangle = abs(sin(angle / 64.0f)) * 1.5f;
@@ -240,7 +285,7 @@ void DrawObj(void) {
 	for (unsigned int i = 0; i < lengthA; i++) {
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, posArr[i]);
-		//model = glm::rotate(model, glm::radians(i * 20.0f + angle), rotArr[i]);
+		model = glm::rotate(model, glm::radians(i * 20.0f + angle), rotArr[i]);
 		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
 		shaders.setMat4("view", view);
 		shaders.setMat4("model", model);
