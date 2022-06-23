@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <GL/glad.h>
-#include <GL/freeglut.h>
+//#include <GL/freeglut.h>
 
 static const double PI = 3.14159265358979323846;
 
