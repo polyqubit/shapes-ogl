@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\glad\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(SolutionDir)Dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(SolutionDir)Dependencies\glfw\include;$(IncludePath);$(SolutionDir)Dependencies\glad\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(SolutionDir)Dependencies\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\glad\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(SolutionDir)Dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(SolutionDir)Dependencies\glfw\include;$(IncludePath);$(SolutionDir)Dependencies\glad\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(SolutionDir)Dependencies\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\glad\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(SolutionDir)Dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(SolutionDir)Dependencies\glfw\include;$(IncludePath);$(SolutionDir)Dependencies\glad\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(SolutionDir)Dependencies\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\glad\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(SolutionDir)Dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependencies\freeglut\include;$(SolutionDir)Dependencies\glew-2.1.0\include;$(SolutionDir)Dependencies\glfw\include;$(IncludePath);$(SolutionDir)Dependencies\glad\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\glew-2.1.0\lib\Release\$(Platform);$(SolutionDir)Dependencies\freeglut\lib\$(Platform);$(SolutionDir)Dependencies\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,7 +102,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;freeglut.lib;glew32.lib;glfw3.lib</AdditionalDependencies>
+      <AdditionalDependencies>shell32.lib;opengl32.lib;freeglut.lib;glew32.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies/glfw/lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -126,7 +126,7 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;freeglut.lib;glew32.lib;glfw3.lib</AdditionalDependencies>
+      <AdditionalDependencies>shell32.lib;opengl32.lib;freeglut.lib;glew32.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies/glfw/lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -148,7 +148,7 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;freeglut.lib;glew32.lib;glfw3.lib</AdditionalDependencies>
+      <AdditionalDependencies>shell32.lib;opengl32.lib;freeglut.lib;glew32.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies/glfw/lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -174,7 +174,7 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;freeglut.lib;glew32.lib;glfw3.lib</AdditionalDependencies>
+      <AdditionalDependencies>shell32.lib;opengl32.lib;freeglut.lib;glew32.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies/glfw/lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>

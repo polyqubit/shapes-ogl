@@ -6,13 +6,14 @@
 
 GLFWwindow* window;
 
+unsigned FrameCount = 0;
+
 void Initialize(void);
 //void InitWindow(int, char* []);
 void ResizeFunction(GLFWwindow*, int, int);
 void RenderFunction(void);
 void TimerFunction(int);
-void KeyboardFunction(unsigned char, int, int);
-void PassiveMovementFunction(int, int);
+void KeyboardFunction(GLFWwindow*);
 void IdleFunction(void);
 void CreateObj(void);
 void DrawObj(void);
@@ -24,6 +25,8 @@ int main(int argc, char* argv[])
 
 	while (!glfwWindowShouldClose(window))
 	{
+		KeyboardFunction(window);
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -55,9 +58,25 @@ void Initialize()
 	}
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, ResizeFunction);
+
+	std::cout << "INFO: OpenGL Version: " << glGetString(GL_VERSION) << "\n";
 }
 
 void ResizeFunction(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+}
+
+void RenderFunction(void)
+{
+	++FrameCount;
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0f, 1.0f, 0.1f, 1.0f);
+}
+
+void KeyboardFunction(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 }

@@ -1,4 +1,5 @@
 #pragma once
+#define GLFW_INCLUDE_NONE
 #include <iostream>
 #include <random>
 #include <stdlib.h>
@@ -6,10 +7,10 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <GL/glad.h>
 #include <GL/freeglut.h>
-#include "Dependencies/glfw/include/GLFW/glfw3.h"
 
 static const double PI = 3.14159265358979323846;
 
