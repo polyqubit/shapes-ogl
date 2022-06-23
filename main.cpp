@@ -11,7 +11,7 @@ unsigned FrameCount = 0;
 void Initialize(void);
 //void InitWindow(int, char* []);
 void ResizeFunction(GLFWwindow*, int, int);
-void RenderFunction(void);
+void RenderFunction(GLFWwindow*);
 void TimerFunction(int);
 void KeyboardFunction(GLFWwindow*);
 void IdleFunction(void);
@@ -26,6 +26,8 @@ int main(int argc, char* argv[])
 	while (!glfwWindowShouldClose(window))
 	{
 		KeyboardFunction(window);
+
+		RenderFunction(window);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -67,12 +69,12 @@ void ResizeFunction(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void RenderFunction(void)
+void RenderFunction(GLFWwindow* window)
 {
 	++FrameCount;
 
+	glClearColor(0.2f, 0.7f, 0.7f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 1.0f, 0.1f, 1.0f);
 }
 
 void KeyboardFunction(GLFWwindow* window)
