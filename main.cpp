@@ -38,12 +38,12 @@ const glm::mat4 identity = glm::mat4(1.0f);
 std::random_device rd;
 std::mt19937 gen(rd());
 
-std::uniform_real_distribution<> posDist(-15, 15);
+std::uniform_real_distribution<> posDist(-20, 20);
 std::uniform_real_distribution<> rotDist(-1, 1);
 
-glm::vec3 posArr[1000];
+glm::vec3 posArr[1500];
 
-glm::vec3 rotArr[1000];
+glm::vec3 rotArr[1500];
 
 // camera's coordinate system
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
@@ -127,6 +127,7 @@ void Initialize()
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, MouseFunction);
 
+	glfwSetWindowPos(window, 400, 100);
 
 	std::cout << "CONTROLS:\n";
 	std::cout << "W         FORWARD\n";
@@ -189,7 +190,7 @@ void KeyboardFunction(GLFWwindow* window)
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 			cameraPos -= cameraUp * cameraSpeed;
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-			yaw -= 10.0f * number;
+			yaw -= 60.0f * number;
 			direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 			direction.y = sin(glm::radians(pitch));
 			direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -197,7 +198,7 @@ void KeyboardFunction(GLFWwindow* window)
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
-			yaw += 10.0f * number;
+			yaw += 60.0f * number;
 			direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 			direction.y = sin(glm::radians(pitch));
 			direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
