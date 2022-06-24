@@ -11,7 +11,11 @@ unsigned frameCount = 0;
 float angle = 0;
 float movCam = 0;
 float cameraSpeed = 0;
-bool camMode = false;
+bool camMode = false, firstMouse = true;
+
+float lastX = 400, lastY = 300;
+
+float pitch = 0.0f, yaw = -90.0f;
 
 GLuint BufferIds[3] = { 0 };
 
@@ -52,6 +56,7 @@ void ResizeFunction(GLFWwindow*, int, int);
 void RenderFunction(GLFWwindow*);
 void TimerFunction(int);
 void KeyboardFunction(GLFWwindow*);
+void MouseFunction(GLFWwindow*, double, double);
 void IdleFunction(void);
 void CreateObj(void);
 void DrawObj(void);
@@ -119,6 +124,10 @@ void Initialize()
 	glFrontFace(GL_CCW);
 	ExitOnGLError("ERROR: Could not set OpenGL culling options");
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, MouseFunction);
+
+
 	std::cout << "CONTROLS:\n";
 	std::cout << "W         FORWARD\n";
 	std::cout << "A         LEFT\n";
@@ -130,6 +139,7 @@ void Initialize()
 	std::cout << "DOWN      DOWN\n";
 	std::cout << "LEFT      ROTATE LEFT\n";
 	std::cout << "RIGHT     ROTATE RIGHT\n";
+	std::cout << "ESCAPE    CLOSE WINDOW\n";
 }
 
 void ResizeFunction(GLFWwindow* window, int width, int height)
@@ -163,6 +173,7 @@ void KeyboardFunction(GLFWwindow* window)
 		camMode = false;
 
 	if (!camMode) {
+		glm::vec3 direction;
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -177,8 +188,56 @@ void KeyboardFunction(GLFWwindow* window)
 			cameraPos += cameraUp * cameraSpeed;
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 			cameraPos -= cameraUp * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+			yaw -= 10.0f * number;
+			direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+			direction.y = sin(glm::radians(pitch));
+			direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+			cameraFront = glm::normalize(direction);
+		}
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		{
+			yaw += 10.0f * number;
+			direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+			direction.y = sin(glm::radians(pitch));
+			direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+			cameraFront = glm::normalize(direction);
+		}
 	}
 }
+
+void MouseFunction(GLFWwindow* window, double x, double y)
+{
+	if (firstMouse) // initially set to true
+	{
+		lastX = x;
+		lastY = y;
+		firstMouse = false;
+	}
+
+	float xoffset = x - lastX;
+	float yoffset = lastY - y; // reversed: y ranges bottom to top
+	lastX = x;
+	lastY = y;
+	const float sensitivity = 0.05f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(direction);
+}
+
 void CreateObj() {
 	const Vertex VERTICES[6] =
 	{
