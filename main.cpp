@@ -1,5 +1,6 @@
 #include "Utils.h"
 #include "Shader.h"
+#include "Camera.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define WINDOW_TITLE "OpenGL Window"
