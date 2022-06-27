@@ -13,10 +13,9 @@ float angle = 0;
 float movCam = 0;
 float cameraSpeed = 0;
 bool camMode = false, firstMouse = true;
+Camera camera;
 
 float lastX = 400, lastY = 300;
-
-float pitch = 0.0f, yaw = -90.0f;
 
 GLuint BufferIds[3] = { 0 };
 
@@ -45,11 +44,6 @@ std::uniform_real_distribution<> rotDist(-1, 1);
 glm::vec3 posArr[1500];
 
 glm::vec3 rotArr[1500];
-
-// camera's coordinate system
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 void Initialize(void);
 //void InitWindow(int, char* []);
@@ -179,31 +173,32 @@ void KeyboardFunction(GLFWwindow* window)
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			cameraPos += cameraSpeed * cameraFront;
+			camera.Position += cameraSpeed * camera.Front;
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			cameraPos -= cameraSpeed * cameraFront;
+			camera.Position -= cameraSpeed * camera.Front;
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			camera.Position -= glm::normalize(glm::cross(camera.Front, camera.Up)) * cameraSpeed;
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			camera.Position += glm::normalize(glm::cross(camera.Front, camera.Up)) * cameraSpeed;
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			cameraPos += cameraUp * cameraSpeed;
+			camera.Position += camera.Up * cameraSpeed;
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			cameraPos -= cameraUp * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-			yaw -= 60.0f * number;
-			direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-			direction.y = sin(glm::radians(pitch));
-			direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-			cameraFront = glm::normalize(direction);
+			camera.Position -= camera.Up * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		{
+			camera.Yaw -= 60.0f * number;
+			direction.x = cos(glm::radians(camera.Yaw)) * cos(glm::radians(camera.Pitch));
+			direction.y = sin(glm::radians(camera.Pitch));
+			direction.z = sin(glm::radians(camera.Yaw)) * cos(glm::radians(camera.Pitch));
+			camera.Front = glm::normalize(direction);
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
-			yaw += 60.0f * number;
-			direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-			direction.y = sin(glm::radians(pitch));
-			direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-			cameraFront = glm::normalize(direction);
+			camera.Yaw += 60.0f * number;
+			direction.x = cos(glm::radians(camera.Yaw)) * cos(glm::radians(camera.Pitch));
+			direction.y = sin(glm::radians(camera.Pitch));
+			direction.z = sin(glm::radians(camera.Yaw)) * cos(glm::radians(camera.Pitch));
+			camera.Front = glm::normalize(direction);
 		}
 	}
 }
@@ -221,23 +216,8 @@ void MouseFunction(GLFWwindow* window, double x, double y)
 	float yoffset = lastY - y; // reversed: y ranges bottom to top
 	lastX = x;
 	lastY = y;
-	const float sensitivity = 0.05f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
 
-	yaw += xoffset;
-	pitch += yoffset;
-
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void CreateObj() {
@@ -281,7 +261,7 @@ void CreateObj() {
 	// model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// set camera
-	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	view = camera.GetViewMatrix();
 
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
 
@@ -333,7 +313,7 @@ void DrawObj(void) {
 		view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 	}
 	else {
-		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		view = camera.GetViewMatrix();
 	}
 
 	shaders.use();
