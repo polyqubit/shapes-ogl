@@ -1,6 +1,7 @@
 #include "Utils.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "Shape.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define WINDOW_TITLE "OpenGL Window"
@@ -17,7 +18,7 @@ Camera camera;
 
 float lastX = 400, lastY = 300;
 
-GLuint BufferIds[3] = { 0 };
+GLuint BufferIds[4] = { 0 };
 
 unsigned FrameCount = 0;
 
@@ -221,30 +222,8 @@ void MouseFunction(GLFWwindow* window, double x, double y)
 }
 
 void CreateObj() {
-	const Vertex VERTICES[6] =
-	{
-		// front part (both are clockwise)
-		{ { 0, 1, -.75,          1 }, { 1, 0.5, 0.5,    1 } },
-		{ { .866f, -.5f, -.75,   1 }, { 0.5, 1, 0.5,    1 } },
-		{ { -.866f, -.5f, -.75,  1 }, { 0.5, 0.5, 1,    1 } },
-		// back part
-		{ { 0, 1, .75,           1 }, { 1, 0.5, 0.5,    1 } },
-		{ { .866f, -.5f, .75,    1 }, { 0.5, 1, 0.5,    1 } },
-		{ { -.866f, -.5f, .75 ,  1 }, { 0.5, 0.5, 1,    1 } }
-	};
-
-	const GLuint INDICES[24] =
-	{
-	  0,1,2,
-	  0,3,4,
-	  0,4,1,
-	  0,5,3,
-	  0,2,5,
-	  1,5,2,
-	  1,4,5,
-	  3,5,4
-	};
-
+	Cube c;
+	TriPrism tp;
 
 	int posAL = sizeof(posArr) / sizeof(glm::vec3);
 	int rotAL = sizeof(rotArr) / sizeof(glm::vec3);
@@ -281,16 +260,22 @@ void CreateObj() {
 	ExitOnGLError("ERROR: Could not generate the buffer objects");
 
 	glBindBuffer(GL_ARRAY_BUFFER, BufferIds[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VERTICES), VERTICES, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(c.VERTICES), c.VERTICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the VBO to the VAO");
 
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VERTICES[0]), (GLvoid*)0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VERTICES[0]), (GLvoid*)sizeof(VERTICES[0].Position));
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(c.VERTICES[0]), (GLvoid*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(c.VERTICES[0]), (GLvoid*)sizeof(c.VERTICES[0].Position));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INDICES), INDICES, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(c.INDICES), c.INDICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
+
+	glGenVertexArrays(1, &BufferIds[3]);
+	glBindVertexArray(BufferIds[3]);
+	glBindBuffer(GL_ARRAY_BUFFER, BufferIds[1]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
 }
