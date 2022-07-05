@@ -291,7 +291,7 @@ void CreateObj() {
 	glGenBuffers(4, &VBOIds[0]);
 	ExitOnGLError("ERROR: Could not generate the buffer objects");
 
-	glGenVertexArrays(2, &VAOIds[0]);
+	glGenVertexArrays(3, &VAOIds[0]);
 	ExitOnGLError("ERROR: Could not generate the VAOs");
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
@@ -302,6 +302,17 @@ void CreateObj() {
 
 	// VAO for cube
 	glBindVertexArray(VAOIds[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
+	ExitOnGLError("ERROR: Could not bind the VAO");
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	ExitOnGLError("ERROR: Could not enable vertex attributes");
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
+	ExitOnGLError("ERROR: Could not set VAO attributes");
+
+	// VAO for light source
+	glBindVertexArray(VAOIds[2]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
 	ExitOnGLError("ERROR: Could not bind the VAO");
 	glEnableVertexAttribArray(0);
@@ -375,6 +386,7 @@ void DrawObj(void) {
 		generalshaders.setMat4("view", view);
 		lightshaders.setMat4("view", view);
 		generalshaders.setMat4("model", model);
+		generalshaders.setVec4("light_Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
 	}
 

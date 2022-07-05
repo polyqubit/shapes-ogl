@@ -186,13 +186,13 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
     <ClCompile Include="Dependencies\glad\src\glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Camera.h" />
-    <ClCompile Include="VertexShader.glsl">
+    <ClCompile Include="GeneralVertexShader.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="FragmentShader.glsl">
+    <ClCompile Include="GeneralFragmentShader.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -209,6 +209,10 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
   <ItemGroup>
     <Text Include="oldmain.txt" />
     <Text Include="oldmain2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LightFragmentShader.glsl" />
+    <None Include="LightVertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

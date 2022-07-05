@@ -18,10 +18,10 @@
     <ClCompile Include="Utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VertexShader.glsl">
+    <ClCompile Include="GeneralVertexShader.glsl">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FragmentShader.glsl">
+    <ClCompile Include="GeneralFragmentShader.glsl">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
@@ -55,5 +55,9 @@
     <Text Include="oldmain2.txt">
       <Filter>Source Files</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LightFragmentShader.glsl" />
+    <None Include="LightVertexShader.glsl" />
   </ItemGroup>
 </Project>
