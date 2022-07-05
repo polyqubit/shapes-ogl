@@ -29,7 +29,8 @@ float CubeRotation = 0;
 clock_t LastTime = 0;
 clock_t LastTimeKey = 0;
 
-Shader shaders;
+Shader generalshaders;
+Shader lightshaders;
 
 glm::mat4 model = glm::mat4(1.0f); // use this to apply geometric transformations
 glm::mat4 view = glm::mat4(1.0f);
@@ -242,8 +243,10 @@ void CreateObj() {
 		tpRotArr[i] = glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen));
 	}
 
-	shaders = Shader("VertexShader.glsl", "FragmentShader.glsl");
-	shaders.use();
+	generalshaders = Shader("GeneralVertexShader.glsl", "GeneralFragmentShader.glsl");
+	generalshaders.use();
+	generalshaders = Shader("LightVertexShader.glsl", "LightFragmentShader.glsl");
+	generalshaders.use();
 
 	// model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -252,8 +255,10 @@ void CreateObj() {
 
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
 	
-	shaders.setMat4("view", view);
-	shaders.setMat4("projection", projection);
+	generalshaders.setMat4("view", view);
+	generalshaders.setMat4("projection", projection);
+	lightshaders.setMat4("view", view);
+	lightshaders.setMat4("projection", projection);
 
 	/*glGenVertexArrays(1, &VAOIds[0]);
 	ExitOnGLError("ERROR: Could not generate the VAOs");
@@ -352,7 +357,8 @@ void DrawObj(void) {
 		view = camera.GetViewMatrix();
 	}
 
-	shaders.use();
+	generalshaders.use();
+	lightshaders.use();
 	//float sinangle = abs(sin(angle / 64.0f)) * 1.5f;
 	//model = glm::rotate(model, glm::radians(15.0f)/CLOCKS_PER_SEC, glm::vec3(-1.0, 1.0, 0.5));
 	//model = glm::scale(model, glm::vec3(sinangle,sinangle,sinangle));
@@ -366,8 +372,9 @@ void DrawObj(void) {
 		model = glm::translate(model, cPosArr[i]);
 		model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
 		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-		shaders.setMat4("view", view);
-		shaders.setMat4("model", model);
+		generalshaders.setMat4("view", view);
+		lightshaders.setMat4("view", view);
+		generalshaders.setMat4("model", model);
 		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
 	}
 
@@ -380,8 +387,9 @@ void DrawObj(void) {
 		model = glm::translate(model, tpPosArr[i]);
 		model = glm::rotate(model, glm::radians(i * 20.0f + angle), tpRotArr[i]);
 		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-		shaders.setMat4("view", view);
-		shaders.setMat4("model", model);
+		generalshaders.setMat4("view", view);
+		lightshaders.setMat4("view", view);
+		generalshaders.setMat4("model", model);
 		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
 	}
 	glBindVertexArray(0);
