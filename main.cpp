@@ -20,6 +20,9 @@ float lastX = 400, lastY = 300;
 
 GLuint BufferIds[10] = { 0 };
 
+GLuint VBOIds[10] = { 0 };
+GLuint VAOIds[10] = { 0 };
+
 unsigned FrameCount = 0;
 
 float CubeRotation = 0;
@@ -224,9 +227,6 @@ void MouseFunction(GLFWwindow* window, double x, double y)
 }
 
 void CreateObj() {
-	Cube c;
-	TriPrism tp;
-
 	int posAL = sizeof(cPosArr) / sizeof(glm::vec3);
 	int rotAL = sizeof(cRotArr) / sizeof(glm::vec3);
 	for (unsigned int i = 0; i < posAL; i++) {
@@ -251,13 +251,13 @@ void CreateObj() {
 	view = camera.GetViewMatrix();
 
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
-
+	
 	shaders.setMat4("view", view);
 	shaders.setMat4("projection", projection);
 
-	glGenVertexArrays(1, &BufferIds[0]);
-	ExitOnGLError("ERROR: Could not generate the VAO");
-	glBindVertexArray(BufferIds[0]);
+	/*glGenVertexArrays(1, &VAOIds[0]);
+	ExitOnGLError("ERROR: Could not generate the VAOs");
+	glBindVertexArray(VAOIds[0]);
 	ExitOnGLError("ERROR: Could not bind the VAO");
 
 	glEnableVertexAttribArray(0);
@@ -268,14 +268,63 @@ void CreateObj() {
 	ExitOnGLError("ERROR: Could not generate the buffer objects");
 
 	glBindBuffer(GL_ARRAY_BUFFER, BufferIds[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(c.VERTICES), c.VERTICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the VBO to the VAO");
 
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(c.VERTICES[0]), (GLvoid*)sizeof(c.VERTICES[0].Position));
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(c.INDICES), c.INDICES, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
+	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");*/
+
+
+	/*
+	starting from the specified location, glGen...() returns a list of integers that are currently available to be bound
+	number = number of ints to be generated, stored contiguously
+	*/
+	glGenBuffers(4, &VBOIds[0]);
+	ExitOnGLError("ERROR: Could not generate the buffer objects");
+
+	glGenVertexArrays(2, &VAOIds[0]);
+	ExitOnGLError("ERROR: Could not generate the VAOs");
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeStruct.VERTICES), cubeStruct.VERTICES, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tpStruct.VERTICES), tpStruct.VERTICES, GL_STATIC_DRAW);
+
+	// VAO for cube
+	glBindVertexArray(VAOIds[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
+	ExitOnGLError("ERROR: Could not bind the VAO");
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	ExitOnGLError("ERROR: Could not enable vertex attributes");
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
+	ExitOnGLError("ERROR: Could not set VAO attributes");
+
+	// generate index buffer object for VAO1
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[2]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
+	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
+	
+	// VAO for triprism
+	glBindVertexArray(VAOIds[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
+	ExitOnGLError("ERROR: Could not bind the VAO");
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	ExitOnGLError("ERROR: Could not enable vertex attributes");
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)sizeof(tpStruct.VERTICES[0].Position));
+	ExitOnGLError("ERROR: Could not set VAO attributes");
+
+	// generate index buffer object for VAO2
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tpStruct.INDICES), tpStruct.INDICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
 
 	glBindVertexArray(0);
@@ -310,11 +359,26 @@ void DrawObj(void) {
 
 	int lengthA = sizeof(cPosArr) / sizeof(glm::vec3);
 	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
-	glBindVertexArray(BufferIds[0]);
+	// draw cubes
+	glBindVertexArray(VAOIds[0]);
 	for (unsigned int i = 0; i < lengthA; i++) {
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, cPosArr[i]);
 		model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
+		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+		shaders.setMat4("view", view);
+		shaders.setMat4("model", model);
+		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+	}
+
+	lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
+	lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
+	// draw triprisms
+	glBindVertexArray(VAOIds[1]);
+	for (unsigned int i = 0; i < lengthA; i++) {
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, tpPosArr[i]);
+		model = glm::rotate(model, glm::radians(i * 20.0f + angle), tpRotArr[i]);
 		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
 		shaders.setMat4("view", view);
 		shaders.setMat4("model", model);
