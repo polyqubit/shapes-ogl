@@ -7,6 +7,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <vector>
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <GL/glad.h>

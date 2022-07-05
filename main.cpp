@@ -18,7 +18,7 @@ Camera camera;
 
 float lastX = 400, lastY = 300;
 
-GLuint BufferIds[5] = { 0 };
+GLuint BufferIds[10] = { 0 };
 
 unsigned FrameCount = 0;
 
@@ -262,39 +262,25 @@ void CreateObj() {
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
 	ExitOnGLError("ERROR: Could not enable vertex attributes");
 
 	glGenBuffers(2, &BufferIds[1]);
 	ExitOnGLError("ERROR: Could not generate the buffer objects");
 
 	glBindBuffer(GL_ARRAY_BUFFER, BufferIds[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeStruct.VERTICES), cubeStruct.VERTICES, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(c.VERTICES), c.VERTICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the VBO to the VAO");
 
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(c.VERTICES[0]), (GLvoid*)sizeof(c.VERTICES[0].Position));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
-	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
-
-	glBindBuffer(GL_ARRAY_BUFFER, BufferIds[3]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tpStruct.VERTICES), tpStruct.VERTICES, GL_STATIC_DRAW);
-	ExitOnGLError("ERROR: Could not bind the VBO to the VAO");
-
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)0);
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)sizeof(tpStruct.VERTICES[0].Position));
-	ExitOnGLError("ERROR: Could not set VAO attributes");
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[4]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tpStruct.INDICES), tpStruct.INDICES, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(c.INDICES), c.INDICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
 
 	glBindVertexArray(0);
 }
+
 
 void DrawObj(void) {
 	clock_t Now = clock();
