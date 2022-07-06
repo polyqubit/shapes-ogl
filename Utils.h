@@ -19,7 +19,6 @@ typedef struct Vertex
 {
 	float Position[4];
 	float Color[4];
-	float Normal[3];
 } Vertex;
 
 typedef struct Matrix

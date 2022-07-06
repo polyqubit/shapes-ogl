@@ -309,9 +309,11 @@ void CreateObj() {
 	ExitOnGLError("ERROR: Could not bind the VAO");
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 	ExitOnGLError("ERROR: Could not enable vertex attributes");
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
 	// generate index buffer object for cube VAO
