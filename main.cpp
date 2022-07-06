@@ -292,7 +292,7 @@ void CreateObj() {
 	starting from the specified location, glGen...() returns a list of integers that are currently available to be bound
 	number = number of ints to be generated, stored contiguously
 	*/
-	glGenBuffers(4, &VBOIds[0]);
+	glGenBuffers(6, &VBOIds[0]);
 	ExitOnGLError("ERROR: Could not generate the buffer objects");
 
 	glGenVertexArrays(3, &VAOIds[0]);
@@ -313,6 +313,11 @@ void CreateObj() {
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
+	// generate index buffer object for cube VAO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[2]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
+	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
+
 	// VAO for light source
 	glBindVertexArray(VAOIds[2]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
@@ -321,9 +326,10 @@ void CreateObj() {
 	glEnableVertexAttribArray(1);
 	ExitOnGLError("ERROR: Could not enable vertex attributes");
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
-	// generate index buffer object for VAO1
+	// generate index buffer object for light VAO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[2]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
@@ -390,7 +396,7 @@ void DrawObj(void) {
 		generalshaders.setMat4("view", view);
 		generalshaders.setMat4("model", model);
 
-		glBindVertexArray(VAOIds[2]);
+		glBindVertexArray(VAOIds[0]);
 		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
 	}
 
