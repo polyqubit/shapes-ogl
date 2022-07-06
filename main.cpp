@@ -244,9 +244,8 @@ void CreateObj() {
 	}
 
 	generalshaders = Shader("GeneralVertexShader.glsl", "GeneralFragmentShader.glsl");
-	generalshaders.use();
-	generalshaders = Shader("LightVertexShader.glsl", "LightFragmentShader.glsl");
-	generalshaders.use();
+	lightshaders = Shader("LightVertexShader.glsl", "LightFragmentShader.glsl");
+	ExitOnGLError("ERROR: Could not load shaders");
 
 	// model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -255,10 +254,15 @@ void CreateObj() {
 
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
 	
+	generalshaders.use();
 	generalshaders.setMat4("view", view);
 	generalshaders.setMat4("projection", projection);
+	ExitOnGLError("ERROR: Could not set uniforms for general shader");
+
+	lightshaders.use();
 	lightshaders.setMat4("view", view);
 	lightshaders.setMat4("projection", projection);
+	ExitOnGLError("ERROR: Could not set uniforms for light shader");
 
 	/*glGenVertexArrays(1, &VAOIds[0]);
 	ExitOnGLError("ERROR: Could not generate the VAOs");
@@ -369,41 +373,52 @@ void DrawObj(void) {
 	}
 
 	generalshaders.use();
-	lightshaders.use();
+	generalshaders.setVec4("light_Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	//float sinangle = abs(sin(angle / 64.0f)) * 1.5f;
 	//model = glm::rotate(model, glm::radians(15.0f)/CLOCKS_PER_SEC, glm::vec3(-1.0, 1.0, 0.5));
 	//model = glm::scale(model, glm::vec3(sinangle,sinangle,sinangle));
 
-	int lengthA = sizeof(cPosArr) / sizeof(glm::vec3);
-	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
-	// draw cubes
-	glBindVertexArray(VAOIds[0]);
-	for (unsigned int i = 0; i < lengthA; i++) {
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, cPosArr[i]);
-		model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
-		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-		generalshaders.setMat4("view", view);
-		lightshaders.setMat4("view", view);
-		generalshaders.setMat4("model", model);
-		generalshaders.setVec4("light_Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
-	}
-
-	lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
-	lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
+	int lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
+	int lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
 	// draw triprisms
-	glBindVertexArray(VAOIds[1]);
 	for (unsigned int i = 0; i < lengthA; i++) {
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, tpPosArr[i]);
 		model = glm::rotate(model, glm::radians(i * 20.0f + angle), tpRotArr[i]);
 		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
 		generalshaders.setMat4("view", view);
-		lightshaders.setMat4("view", view);
 		generalshaders.setMat4("model", model);
+
+		glBindVertexArray(VAOIds[1]);
 		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
 	}
+
+	lengthA = sizeof(cPosArr) / sizeof(glm::vec3);
+	lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
+	// draw cubes
+	for (unsigned int i = 0; i < lengthA; i++) {
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, cPosArr[i]);
+		model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
+		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+		generalshaders.setMat4("view", view);
+		generalshaders.setMat4("model", model);
+
+		glBindVertexArray(VAOIds[0]);
+		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+	}
+
+	// light cube
+	lightshaders.use();
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0.0, 0.0, 10.0));
+	model = glm::scale(model, glm::vec3(2.0f));
+	lightshaders.setMat4("view", view);
+	lightshaders.setMat4("model", model);
+
+	glBindVertexArray(VAOIds[2]);
+	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+
 	glBindVertexArray(0);
 }
 
