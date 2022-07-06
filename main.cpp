@@ -298,11 +298,9 @@ void CreateObj() {
 	glGenVertexArrays(3, &VAOIds[0]);
 	ExitOnGLError("ERROR: Could not generate the VAOs");
 
+	// VBO for cube
 	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeStruct.VERTICES), cubeStruct.VERTICES, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tpStruct.VERTICES), tpStruct.VERTICES, GL_STATIC_DRAW);
 
 	// VAO for cube
 	glBindVertexArray(VAOIds[0]);
@@ -323,13 +321,16 @@ void CreateObj() {
 	glEnableVertexAttribArray(1);
 	ExitOnGLError("ERROR: Could not enable vertex attributes");
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
 	// generate index buffer object for VAO1
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[2]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
+
+	// VBO for triprism
+	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tpStruct.VERTICES), tpStruct.VERTICES, GL_STATIC_DRAW);
 	
 	// VAO for triprism
 	glBindVertexArray(VAOIds[1]);
@@ -378,8 +379,23 @@ void DrawObj(void) {
 	//model = glm::rotate(model, glm::radians(15.0f)/CLOCKS_PER_SEC, glm::vec3(-1.0, 1.0, 0.5));
 	//model = glm::scale(model, glm::vec3(sinangle,sinangle,sinangle));
 
-	int lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
-	int lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
+	int lengthA = sizeof(cPosArr) / sizeof(glm::vec3);
+	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
+	// draw cubes
+	for (unsigned int i = 0; i < lengthA; i++) {
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, cPosArr[i]);
+		model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
+		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+		generalshaders.setMat4("view", view);
+		generalshaders.setMat4("model", model);
+
+		glBindVertexArray(VAOIds[2]);
+		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+	}
+
+	lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
+	lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
 	// draw triprisms
 	for (unsigned int i = 0; i < lengthA; i++) {
 		model = glm::mat4(1.0f);
@@ -393,22 +409,9 @@ void DrawObj(void) {
 		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
 	}
 
+	// light cube
 	lengthA = sizeof(cPosArr) / sizeof(glm::vec3);
 	lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
-	// draw cubes
-	for (unsigned int i = 0; i < lengthA; i++) {
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, cPosArr[i]);
-		model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
-		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-		generalshaders.setMat4("view", view);
-		generalshaders.setMat4("model", model);
-
-		glBindVertexArray(VAOIds[0]);
-		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
-	}
-
-	// light cube
 	lightshaders.use();
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0, 0.0, 10.0));
