@@ -7,5 +7,7 @@ uniform vec4 light_Color;
 
 void main(void)
 {
-  out_Color = light_Color * ex_Color;
+    float ambient_Strength = 0.1;
+
+    out_Color = ambient_Strength * light_Color * ex_Color;
 }
