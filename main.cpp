@@ -36,7 +36,7 @@ glm::mat4 model = glm::mat4(1.0f); // use this to apply geometric transformation
 glm::mat4 view = glm::mat4(1.0f);
 glm::mat4 projection;
 
-glm::vec3 lightPos = glm::vec3(0.0, 0.0, 10.0);
+glm::vec3 lightPos = glm::vec3(0.0, 20.0, 0.0);
 
 // identity matrix
 const glm::mat4 identity = glm::mat4(1.0f);
@@ -400,9 +400,9 @@ void DrawObj(void) {
 	generalshaders.setVec3("object_Color", glm::vec3(0.8f, 0.5f, 0.1f));
 	// draw cube
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -5.0f));
-	//model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
-	model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+	model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(2 * 20.0f + angle), glm::vec3(1.0));
+	model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
 	generalshaders.setMat4("view", view);
 	generalshaders.setMat4("model", model);
 
