@@ -36,7 +36,7 @@ glm::mat4 model = glm::mat4(1.0f); // use this to apply geometric transformation
 glm::mat4 view = glm::mat4(1.0f);
 glm::mat4 projection;
 
-glm::vec3 lightPos = glm::vec3(0.0, 20.0, 0.0);
+glm::vec3 lightPos = glm::vec3(0.0, 2.0, -10.0);
 
 // identity matrix
 const glm::mat4 identity = glm::mat4(1.0f);
@@ -378,6 +378,11 @@ void DrawObj(void) {
 	// important: n * ((float)(Now - LastTime) / CLOCKS_PER_SEC
 	LastTime = Now;
 
+	const float radius = 20.0f;
+	float lightX = sin(glfwGetTime()*2) * radius;
+	float lightZ = cos(glfwGetTime()*2) * radius;
+	glm::vec3 newpos = lightPos + glm::vec3(lightX, 0.0, lightZ);
+
 	if (camMode) {
 		const float radius = 20.0f;
 		float camX = sin(glfwGetTime()) * radius;
@@ -388,21 +393,25 @@ void DrawObj(void) {
 		view = camera.GetViewMatrix();
 	}
 
-	//float sinangle = abs(sin(angle / 64.0f)) * 1.5f;
-	//model = glm::rotate(model, glm::radians(15.0f)/CLOCKS_PER_SEC, glm::vec3(-1.0, 1.0, 0.5));
-	//model = glm::scale(model, glm::vec3(sinangle,sinangle,sinangle));
-
-
 	generalshaders.use();
-	generalshaders.setVec3("light_Pos", lightPos);
+	generalshaders.setVec3("light_Pos", newpos);
 	generalshaders.setVec3("view_Pos", camera.Position);
 	generalshaders.setVec3("light_Color", glm::vec3(1.0f, 1.0f, 1.0f));
-	generalshaders.setVec3("object_Color", glm::vec3(0.8f, 0.5f, 0.1f));
+	generalshaders.setVec3("object_Color", glm::vec3(0.8f, 0.8f, 0.8f));
+
+	generalshaders.setVec3("material.ambient", glm::vec3(0.8f, 0.8f, 0.8f));
+	generalshaders.setVec3("material.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+	generalshaders.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	generalshaders.setFloat("material.shininess", 32.0f);
+
+	generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
+	generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 	// draw cube
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(2 * 20.0f + angle), glm::vec3(1.0));
-	model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -6.0f));
+	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0));
+	model = glm::scale(model, glm::vec3(2.2f, 7.0f, 2.2f));
 	generalshaders.setMat4("view", view);
 	generalshaders.setMat4("model", model);
 
@@ -413,7 +422,8 @@ void DrawObj(void) {
 	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
 	lightshaders.use();
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, lightPos);
+	
+	model = glm::translate(model, newpos);
 	model = glm::scale(model, glm::vec3(2.0f));
 	lightshaders.setMat4("view", view);
 	lightshaders.setMat4("model", model);
