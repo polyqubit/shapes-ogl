@@ -1,10 +1,9 @@
 #version 400
 
-layout(location=0) in vec4 in_Position;
-layout(location=1) in vec4 in_Color;
-layout(location=2) in vec4 in_Norm;
-out vec4 ex_Color;
-out vec4 ex_Norm;
+layout(location=0) in vec3 in_Position;
+layout(location=1) in vec3 in_Norm;
+out vec3 ex_Norm;
+out vec3 ex_Frag;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -12,7 +11,8 @@ uniform mat4 projection;
 
 void main(void)
 {
-  gl_Position = projection * view * model * in_Position;
-  ex_Color = in_Color;
-  ex_Norm = in_Norm;
+    ex_Frag = vec3(model * vec4(in_Position, 1.0));
+    ex_Norm = mat3(transpose(inverse(model))) * in_Norm;  
+    
+    gl_Position = projection * view * vec4(ex_Frag, 1.0);
 }

@@ -36,21 +36,23 @@ glm::mat4 model = glm::mat4(1.0f); // use this to apply geometric transformation
 glm::mat4 view = glm::mat4(1.0f);
 glm::mat4 projection;
 
+glm::vec3 lightPos = glm::vec3(0.0, 0.0, 10.0);
+
 // identity matrix
 const glm::mat4 identity = glm::mat4(1.0f);
 
 // initialize random engine
-std::random_device rd;
-std::mt19937 gen(rd());
-
-std::uniform_real_distribution<> posDist(-20, 20);
-std::uniform_real_distribution<> rotDist(-1, 1);
-
-glm::vec3 cPosArr[750];
-glm::vec3 tpPosArr[750];
-
-glm::vec3 cRotArr[750];
-glm::vec3 tpRotArr[750];
+//std::random_device rd;
+//std::mt19937 gen(rd());
+//
+//std::uniform_real_distribution<> posDist(-20, 20);
+//std::uniform_real_distribution<> rotDist(-1, 1);
+//
+//glm::vec3 cPosArr[750];
+//glm::vec3 tpPosArr[750];
+//
+//glm::vec3 cRotArr[750];
+//glm::vec3 tpRotArr[750];
 
 void Initialize(void);
 //void InitWindow(int, char* []);
@@ -121,10 +123,10 @@ void Initialize()
 	glDepthFunc(GL_LESS);
 	ExitOnGLError("ERROR: Could not set OpenGL depth testing options");
 
-	glEnable(GL_CULL_FACE);
+	/*glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-	ExitOnGLError("ERROR: Could not set OpenGL culling options");
+	ExitOnGLError("ERROR: Could not set OpenGL culling options");*/
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, MouseFunction);
@@ -229,7 +231,7 @@ void MouseFunction(GLFWwindow* window, double x, double y)
 }
 
 void CreateObj() {
-	int posAL = sizeof(cPosArr) / sizeof(glm::vec3);
+	/*int posAL = sizeof(cPosArr) / sizeof(glm::vec3);
 	int rotAL = sizeof(cRotArr) / sizeof(glm::vec3);
 	for (unsigned int i = 0; i < posAL; i++) {
 		cPosArr[i] = glm::vec3(posDist(gen), posDist(gen), posDist(gen));
@@ -242,7 +244,7 @@ void CreateObj() {
 	}
 	for (unsigned int i = 0; i < rotAL; i++) {
 		tpRotArr[i] = glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen));
-	}
+	}*/
 
 	generalshaders = Shader("GeneralVertexShader.glsl", "GeneralFragmentShader.glsl");
 	lightshaders = Shader("LightVertexShader.glsl", "LightFragmentShader.glsl");
@@ -293,37 +295,41 @@ void CreateObj() {
 	starting from the specified location, glGen...() returns a list of integers that are currently available to be bound
 	number = number of ints to be generated, stored contiguously
 	*/
-	glGenBuffers(6, &VBOIds[0]);
+	glGenBuffers(3, &VBOIds[0]);
 	ExitOnGLError("ERROR: Could not generate the buffer objects");
 
-	glGenVertexArrays(3, &VAOIds[0]);
+	glGenVertexArrays(2, &VAOIds[0]);
 	ExitOnGLError("ERROR: Could not generate the VAOs");
 
-	// VBO for cube
+	// VBO for lightable cube
 	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeStruct.VERTICES), cubeStruct.VERTICES, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(clStruct.VERTICES), clStruct.VERTICES, GL_STATIC_DRAW);
 
-	// VAO for cube
+	// VAO for lightable cube
 	glBindVertexArray(VAOIds[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
 	ExitOnGLError("ERROR: Could not bind the VAO");
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
 	ExitOnGLError("ERROR: Could not enable vertex attributes");
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// normal attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
-	// generate index buffer object for cube VAO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
-	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
+	//// generate index buffer object for cube VAO
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[2]);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
+	//ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
+
+	// VBO for light source
+	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeStruct.VERTICES), cubeStruct.VERTICES, GL_STATIC_DRAW);
 
 	// VAO for light source
-	glBindVertexArray(VAOIds[2]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[0]);
+	glBindVertexArray(VAOIds[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
 	ExitOnGLError("ERROR: Could not bind the VAO");
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -337,25 +343,25 @@ void CreateObj() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
 
-	// VBO for triprism
-	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tpStruct.VERTICES), tpStruct.VERTICES, GL_STATIC_DRAW);
-	
-	// VAO for triprism
-	glBindVertexArray(VAOIds[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
-	ExitOnGLError("ERROR: Could not bind the VAO");
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	ExitOnGLError("ERROR: Could not enable vertex attributes");
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)sizeof(tpStruct.VERTICES[0].Position));
-	ExitOnGLError("ERROR: Could not set VAO attributes");
+	//// VBO for triprism
+	//glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(tpStruct.VERTICES), tpStruct.VERTICES, GL_STATIC_DRAW);
+	//
+	//// VAO for triprism
+	//glBindVertexArray(VAOIds[1]);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
+	//ExitOnGLError("ERROR: Could not bind the VAO");
+	//glEnableVertexAttribArray(0);
+	//glEnableVertexAttribArray(1);
+	//ExitOnGLError("ERROR: Could not enable vertex attributes");
+	//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)0);
+	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)sizeof(tpStruct.VERTICES[0].Position));
+	//ExitOnGLError("ERROR: Could not set VAO attributes");
 
-	// generate index buffer object for VAO2
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[3]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tpStruct.INDICES), tpStruct.INDICES, GL_STATIC_DRAW);
-	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
+	//// generate index buffer object for VAO2
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[3]);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tpStruct.INDICES), tpStruct.INDICES, GL_STATIC_DRAW);
+	//ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
 
 	glBindVertexArray(0);
 }
@@ -382,55 +388,52 @@ void DrawObj(void) {
 		view = camera.GetViewMatrix();
 	}
 
-	generalshaders.use();
-	generalshaders.setVec4("light_Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	//float sinangle = abs(sin(angle / 64.0f)) * 1.5f;
 	//model = glm::rotate(model, glm::radians(15.0f)/CLOCKS_PER_SEC, glm::vec3(-1.0, 1.0, 0.5));
 	//model = glm::scale(model, glm::vec3(sinangle,sinangle,sinangle));
 
-	int lengthA = sizeof(cPosArr) / sizeof(glm::vec3);
-	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
-	// draw cubes
-	for (unsigned int i = 0; i < lengthA; i++) {
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, cPosArr[i]);
-		model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
-		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-		generalshaders.setMat4("view", view);
-		generalshaders.setMat4("model", model);
 
-		glBindVertexArray(VAOIds[0]);
-		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
-	}
+	generalshaders.use();
+	generalshaders.setVec3("light_Pos", lightPos);
+	generalshaders.setVec3("view_Pos", camera.Position);
+	generalshaders.setVec3("light_Color", glm::vec3(1.0f, 1.0f, 1.0f));
+	generalshaders.setVec3("object_Color", glm::vec3(0.8f, 0.5f, 0.1f));
+	// draw cube
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -5.0f));
+	//model = glm::rotate(model, glm::radians(i * 20.0f + angle), cRotArr[i]);
+	model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+	generalshaders.setMat4("view", view);
+	generalshaders.setMat4("model", model);
 
-	lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
-	lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
-	// draw triprisms
-	for (unsigned int i = 0; i < lengthA; i++) {
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, tpPosArr[i]);
-		model = glm::rotate(model, glm::radians(i * 20.0f + angle), tpRotArr[i]);
-		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-		generalshaders.setMat4("view", view);
-		generalshaders.setMat4("model", model);
-
-		glBindVertexArray(VAOIds[1]);
-		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
-	}
+	glBindVertexArray(VAOIds[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	// light cube
-	lengthA = sizeof(cPosArr) / sizeof(glm::vec3);
-	lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
+	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
 	lightshaders.use();
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0, 0.0, 10.0));
+	model = glm::translate(model, lightPos);
 	model = glm::scale(model, glm::vec3(2.0f));
 	lightshaders.setMat4("view", view);
 	lightshaders.setMat4("model", model);
 
-	glBindVertexArray(VAOIds[2]);
+	glBindVertexArray(VAOIds[1]);
 	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+	//lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
+	//lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
+	//// draw triprisms
+	//for (unsigned int i = 0; i < lengthA; i++) {
+	//	model = glm::mat4(1.0f);
+	//	model = glm::translate(model, tpPosArr[i]);
+	//	model = glm::rotate(model, glm::radians(i * 20.0f + angle), tpRotArr[i]);
+	//	model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+	//	generalshaders.setMat4("view", view);
+	//	generalshaders.setMat4("model", model);
 
+	//	glBindVertexArray(VAOIds[1]);
+	//	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+	//}
 	glBindVertexArray(0);
 }
 
