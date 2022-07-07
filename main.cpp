@@ -381,7 +381,8 @@ void DrawObj(void) {
 	const float radius = 20.0f;
 	float lightX = sin(glfwGetTime()*2) * radius;
 	float lightZ = cos(glfwGetTime()*2) * radius;
-	glm::vec3 newpos = lightPos + glm::vec3(lightX, 0.0, lightZ);
+	//glm::vec3 newpos = lightPos + glm::vec3(lightX, 0.0, lightZ);
+	glm::vec3 newpos = lightPos;
 
 	if (camMode) {
 		const float radius = 20.0f;
@@ -401,8 +402,8 @@ void DrawObj(void) {
 
 	generalshaders.setVec3("material.ambient", glm::vec3(0.8f, 0.8f, 0.8f));
 	generalshaders.setVec3("material.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-	generalshaders.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-	generalshaders.setFloat("material.shininess", 32.0f);
+	generalshaders.setVec3("material.specular", glm::vec3(0.8f, 0.8f, 0.8f));
+	generalshaders.setFloat("material.shininess", 64.0f);
 
 	generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
@@ -424,7 +425,7 @@ void DrawObj(void) {
 	model = glm::mat4(1.0f);
 	
 	model = glm::translate(model, newpos);
-	model = glm::scale(model, glm::vec3(2.0f));
+	model = glm::scale(model, glm::vec3(0.5f));
 	lightshaders.setMat4("view", view);
 	lightshaders.setMat4("model", model);
 
