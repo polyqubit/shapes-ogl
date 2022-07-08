@@ -1,6 +1,8 @@
 #pragma once
 #define GLFW_INCLUDE_NONE
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <random>
 #include <stdlib.h>
 #include <stdio.h>

@@ -250,7 +250,8 @@ void CreateObj() {
 
 	stbi_set_flip_vertically_on_load(true);
 
-	//ss
+	glActiveTexture(GL_TEXTURE0);
+	texIds[0] = LoadTex("container.png");
 
 	generalshaders = Shader("GeneralVertexShader.glsl", "GeneralFragmentShader.glsl");
 	lightshaders = Shader("LightVertexShader.glsl", "LightFragmentShader.glsl");
@@ -271,6 +272,7 @@ void CreateObj() {
 	generalshaders.use();
 	generalshaders.setMat4("view", view);
 	generalshaders.setMat4("projection", projection);
+	generalshaders.setInt("material.diffuse", texIds[0]);
 	ExitOnGLError("ERROR: Could not set uniforms for general shader");
 
 	/*
@@ -360,18 +362,16 @@ void DrawObj(void) {
 	}
 
 	generalshaders.use();
-	generalshaders.setInt("material.diffuse", texIds[0]);
-	generalshaders.setVec3("light_Pos", newpos);
+	generalshaders.setVec3("light.position", newpos);
 	generalshaders.setVec3("view_Pos", camera.Position);
-	generalshaders.setVec3("light_Color", glm::vec3(1.0f, 1.0f, 1.0f));
-	generalshaders.setVec3("object_Color", glm::vec3(0.8f, 0.8f, 0.8f));
-
-	generalshaders.setVec3("material.specular", glm::vec3(0.8f, 0.8f, 0.8f));
-	generalshaders.setFloat("material.shininess", 64.0f);
 
 	generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
 	generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+	generalshaders.setVec3("material.specular", glm::vec3(0.8f, 0.8f, 0.8f));
+	generalshaders.setFloat("material.shininess", 64.0f);
+
 	// draw cube
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -6.0f));
@@ -420,7 +420,7 @@ void DeleteObj(void) {
 	ExitOnGLError("ERROR: Could not destroy the buffer objects");
 }
 
-GLuint loadTex(char const* path)
+GLuint LoadTex(char const* path)
 {
 	GLuint textureID;
 	glGenTextures(1, &textureID);
@@ -429,13 +429,13 @@ GLuint loadTex(char const* path)
 	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
 	if (data)
 	{
-		GLenum format;
-		if (nrComponents == 1)
+		GLenum format = GL_RGBA;
+		/*if (nrComponents == 1)
 			format = GL_RED;
 		else if (nrComponents == 3)
 			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
+		else 
+			format = GL_RGBA;*/
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
