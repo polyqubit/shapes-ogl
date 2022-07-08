@@ -15,6 +15,7 @@ void main(void)
 {
     ex_Frag = vec3(model * vec4(in_Position, 1.0));
     ex_Norm = mat3(transpose(inverse(model))) * in_Norm;  
-    
+    ex_Tex  = in_Tex;
+
     gl_Position = projection * view * vec4(ex_Frag, 1.0);
 }

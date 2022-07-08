@@ -65,6 +65,7 @@ void MouseFunction(GLFWwindow*, double, double);
 void IdleFunction(void);
 void CreateObj(void);
 void DrawObj(void);
+GLuint LoadTex(const char*);
 //void DeleteObj(void);
 
 int main(int argc, char* argv[])
@@ -247,23 +248,9 @@ void CreateObj() {
 		tpRotArr[i] = glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen));
 	}*/
 
-	glGenTextures(1, &texIds[0]);
-	glBindTexture(GL_TEXTURE_2D, texIds[0]);
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	stbi_set_flip_vertically_on_load(true);
 
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else { std::cout << "Failed to load texture\n"; }
-	stbi_image_free(data);
+	//ss
 
 	generalshaders = Shader("GeneralVertexShader.glsl", "GeneralFragmentShader.glsl");
 	lightshaders = Shader("LightVertexShader.glsl", "LightFragmentShader.glsl");
@@ -276,39 +263,15 @@ void CreateObj() {
 
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
 	
-	generalshaders.use();
-	generalshaders.setMat4("view", view);
-	generalshaders.setMat4("projection", projection);
-	ExitOnGLError("ERROR: Could not set uniforms for general shader");
-
 	lightshaders.use();
 	lightshaders.setMat4("view", view);
 	lightshaders.setMat4("projection", projection);
 	ExitOnGLError("ERROR: Could not set uniforms for light shader");
 
-	/*glGenVertexArrays(1, &VAOIds[0]);
-	ExitOnGLError("ERROR: Could not generate the VAOs");
-	glBindVertexArray(VAOIds[0]);
-	ExitOnGLError("ERROR: Could not bind the VAO");
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	ExitOnGLError("ERROR: Could not enable vertex attributes");
-
-	glGenBuffers(2, &BufferIds[1]);
-	ExitOnGLError("ERROR: Could not generate the buffer objects");
-
-	glBindBuffer(GL_ARRAY_BUFFER, BufferIds[1]);
-	ExitOnGLError("ERROR: Could not bind the VBO to the VAO");
-
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(cubeStruct.VERTICES[0]), (GLvoid*)sizeof(cubeStruct.VERTICES[0].Position));
-	ExitOnGLError("ERROR: Could not set VAO attributes");
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferIds[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
-	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");*/
-
+	generalshaders.use();
+	generalshaders.setMat4("view", view);
+	generalshaders.setMat4("projection", projection);
+	ExitOnGLError("ERROR: Could not set uniforms for general shader");
 
 	/*
 	starting from the specified location, glGen...() returns a list of integers that are currently available to be bound
@@ -333,9 +296,9 @@ void CreateObj() {
 	glEnableVertexAttribArray(2);
 	ExitOnGLError("ERROR: Could not enable vertex attributes");
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	// normal attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	// texture attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
@@ -364,26 +327,6 @@ void CreateObj() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[2]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeStruct.INDICES), cubeStruct.INDICES, GL_STATIC_DRAW);
 	ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
-
-	//// VBO for triprism
-	//glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(tpStruct.VERTICES), tpStruct.VERTICES, GL_STATIC_DRAW);
-	//
-	//// VAO for triprism
-	//glBindVertexArray(VAOIds[1]);
-	//glBindBuffer(GL_ARRAY_BUFFER, VBOIds[1]);
-	//ExitOnGLError("ERROR: Could not bind the VAO");
-	//glEnableVertexAttribArray(0);
-	//glEnableVertexAttribArray(1);
-	//ExitOnGLError("ERROR: Could not enable vertex attributes");
-	//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)0);
-	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(tpStruct.VERTICES[0]), (GLvoid*)sizeof(tpStruct.VERTICES[0].Position));
-	//ExitOnGLError("ERROR: Could not set VAO attributes");
-
-	//// generate index buffer object for VAO2
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOIds[3]);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(tpStruct.INDICES), tpStruct.INDICES, GL_STATIC_DRAW);
-	//ExitOnGLError("ERROR: Could not bind the IBO to the VAO");
 
 	glBindVertexArray(0);
 }
@@ -415,17 +358,14 @@ void DrawObj(void) {
 	else {
 		view = camera.GetViewMatrix();
 	}
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texIds[0]);
+
 	generalshaders.use();
-	generalshaders.setInt("in_Tex", 0);
+	generalshaders.setInt("material.diffuse", texIds[0]);
 	generalshaders.setVec3("light_Pos", newpos);
 	generalshaders.setVec3("view_Pos", camera.Position);
 	generalshaders.setVec3("light_Color", glm::vec3(1.0f, 1.0f, 1.0f));
 	generalshaders.setVec3("object_Color", glm::vec3(0.8f, 0.8f, 0.8f));
 
-	generalshaders.setInt("material.diffuse", 0);
-	generalshaders.setVec3("material.ambient", glm::vec3(0.8f, 0.8f, 0.8f));
 	generalshaders.setVec3("material.specular", glm::vec3(0.8f, 0.8f, 0.8f));
 	generalshaders.setFloat("material.shininess", 64.0f);
 
@@ -436,10 +376,12 @@ void DrawObj(void) {
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -6.0f));
 	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0));
-	model = glm::scale(model, glm::vec3(2.2f, 7.0f, 2.2f));
+	model = glm::scale(model, glm::vec3(2.2f, 2.2f, 2.2f));
 	generalshaders.setMat4("view", view);
 	generalshaders.setMat4("model", model);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texIds[0]);
 	glBindVertexArray(VAOIds[0]);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -476,4 +418,41 @@ void DeleteObj(void) {
 	glDeleteBuffers(2, &BufferIds[1]);
 	glDeleteVertexArrays(1, &BufferIds[0]);
 	ExitOnGLError("ERROR: Could not destroy the buffer objects");
+}
+
+GLuint loadTex(char const* path)
+{
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+	if (data)
+	{
+		GLenum format;
+		if (nrComponents == 1)
+			format = GL_RED;
+		else if (nrComponents == 3)
+			format = GL_RGB;
+		else if (nrComponents == 4)
+			format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
+		stbi_image_free(data);
+	}
+
+	return textureID;
 }
