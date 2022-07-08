@@ -22,6 +22,7 @@ GLuint BufferIds[10] = { 0 };
 
 GLuint VBOIds[10] = { 0 };
 GLuint VAOIds[10] = { 0 };
+GLuint texIds[10] = { 0 };
 
 unsigned FrameCount = 0;
 
@@ -157,7 +158,7 @@ void RenderFunction(GLFWwindow* window)
 	++FrameCount;
 
 	//glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	DrawObj();
 	glfwSwapBuffers(window);
@@ -246,6 +247,24 @@ void CreateObj() {
 		tpRotArr[i] = glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen));
 	}*/
 
+	glGenTextures(1, &texIds[0]);
+	glBindTexture(GL_TEXTURE_2D, texIds[0]);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else { std::cout << "Failed to load texture\n"; }
+	stbi_image_free(data);
+
 	generalshaders = Shader("GeneralVertexShader.glsl", "GeneralFragmentShader.glsl");
 	lightshaders = Shader("LightVertexShader.glsl", "LightFragmentShader.glsl");
 	ExitOnGLError("ERROR: Could not load shaders");
@@ -311,11 +330,14 @@ void CreateObj() {
 	ExitOnGLError("ERROR: Could not bind the VAO");
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 	ExitOnGLError("ERROR: Could not enable vertex attributes");
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	// normal attribute
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	// texture attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	ExitOnGLError("ERROR: Could not set VAO attributes");
 
 	//// generate index buffer object for cube VAO
@@ -393,15 +415,17 @@ void DrawObj(void) {
 	else {
 		view = camera.GetViewMatrix();
 	}
-
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texIds[0]);
 	generalshaders.use();
+	generalshaders.setInt("in_Tex", 0);
 	generalshaders.setVec3("light_Pos", newpos);
 	generalshaders.setVec3("view_Pos", camera.Position);
 	generalshaders.setVec3("light_Color", glm::vec3(1.0f, 1.0f, 1.0f));
 	generalshaders.setVec3("object_Color", glm::vec3(0.8f, 0.8f, 0.8f));
 
+	generalshaders.setInt("material.diffuse", 0);
 	generalshaders.setVec3("material.ambient", glm::vec3(0.8f, 0.8f, 0.8f));
-	generalshaders.setVec3("material.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
 	generalshaders.setVec3("material.specular", glm::vec3(0.8f, 0.8f, 0.8f));
 	generalshaders.setFloat("material.shininess", 64.0f);
 
