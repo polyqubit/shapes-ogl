@@ -252,6 +252,8 @@ void CreateObj() {
 
 	glActiveTexture(GL_TEXTURE0);
 	texIds[0] = LoadTex("container.png");
+	glActiveTexture(GL_TEXTURE1);
+	texIds[1] = LoadTex("containerSpec.png");
 
 	generalshaders = Shader("GeneralVertexShader.glsl", "GeneralFragmentShader.glsl");
 	lightshaders = Shader("LightVertexShader.glsl", "LightFragmentShader.glsl");
@@ -273,6 +275,7 @@ void CreateObj() {
 	generalshaders.setMat4("view", view);
 	generalshaders.setMat4("projection", projection);
 	generalshaders.setInt("material.diffuse", 0); // because texture 0 was activated
+	generalshaders.setInt("material.specular", 1);
 	ExitOnGLError("ERROR: Could not set uniforms for general shader");
 
 	/*
@@ -369,7 +372,6 @@ void DrawObj(void) {
 	generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
 	generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-	generalshaders.setVec3("material.specular", glm::vec3(0.8f, 0.8f, 0.8f));
 	generalshaders.setFloat("material.shininess", 64.0f);
 
 	// draw cube

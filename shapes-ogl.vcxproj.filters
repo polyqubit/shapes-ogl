@@ -64,5 +64,8 @@
     <Image Include="container.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="containerSpec.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
