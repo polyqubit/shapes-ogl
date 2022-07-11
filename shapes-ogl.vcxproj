@@ -214,6 +214,9 @@ copy "$(SolutionDir)Dependencies\glew-2.1.0\bin\Release\$(Platform)\glew32.dll" 
     <None Include="LightFragmentShader.glsl" />
     <None Include="LightVertexShader.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="container.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

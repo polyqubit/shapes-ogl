@@ -60,4 +60,9 @@
     <None Include="LightFragmentShader.glsl" />
     <None Include="LightVertexShader.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="container.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

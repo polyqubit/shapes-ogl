@@ -263,7 +263,7 @@ void CreateObj() {
 	view = camera.GetViewMatrix();
 
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
-	
+		
 	lightshaders.use();
 	lightshaders.setMat4("view", view);
 	lightshaders.setMat4("projection", projection);
@@ -272,7 +272,7 @@ void CreateObj() {
 	generalshaders.use();
 	generalshaders.setMat4("view", view);
 	generalshaders.setMat4("projection", projection);
-	generalshaders.setInt("material.diffuse", texIds[0]);
+	generalshaders.setInt("material.diffuse", 0); // because texture 0 was activated
 	ExitOnGLError("ERROR: Could not set uniforms for general shader");
 
 	/*
@@ -427,15 +427,18 @@ GLuint LoadTex(char const* path)
 
 	int width, height, nrComponents;
 	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+
+	//std::cout << width << " " << height << " " << nrComponents << std::endl;
+	//std::cout << data << std::endl;
 	if (data)
 	{
 		GLenum format = GL_RGBA;
-		/*if (nrComponents == 1)
+		if (nrComponents == 1)
 			format = GL_RED;
 		else if (nrComponents == 3)
 			format = GL_RGB;
-		else 
-			format = GL_RGBA;*/
+		else if (nrComponents == 4)
+			format = GL_RGBA;
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
