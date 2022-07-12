@@ -43,16 +43,16 @@ glm::vec3 lightPos = glm::vec3(0.0, 2.0, -10.0);
 const glm::mat4 identity = glm::mat4(1.0f);
 
 // initialize random engine
-//std::random_device rd;
-//std::mt19937 gen(rd());
-//
-//std::uniform_real_distribution<> posDist(-20, 20);
-//std::uniform_real_distribution<> rotDist(-1, 1);
-//
-//glm::vec3 cPosArr[750];
+std::random_device rd;
+std::mt19937 gen(rd());
+
+std::uniform_real_distribution<> posDist(-20, 20);
+std::uniform_real_distribution<> rotDist(-1, 1);
+
+glm::vec3 cPosArr[50];
 //glm::vec3 tpPosArr[750];
-//
-//glm::vec3 cRotArr[750];
+
+glm::vec3 cRotArr[50];
 //glm::vec3 tpRotArr[750];
 
 void Initialize(void);
@@ -233,7 +233,7 @@ void MouseFunction(GLFWwindow* window, double x, double y)
 }
 
 void CreateObj() {
-	/*int posAL = sizeof(cPosArr) / sizeof(glm::vec3);
+	int posAL = sizeof(cPosArr) / sizeof(glm::vec3);
 	int rotAL = sizeof(cRotArr) / sizeof(glm::vec3);
 	for (unsigned int i = 0; i < posAL; i++) {
 		cPosArr[i] = glm::vec3(posDist(gen), posDist(gen), posDist(gen));
@@ -241,12 +241,6 @@ void CreateObj() {
 	for (unsigned int i = 0; i < rotAL; i++) {
 		cRotArr[i] = glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen));
 	}
-	for (unsigned int i = 0; i < posAL; i++) {
-		tpPosArr[i] = glm::vec3(posDist(gen), posDist(gen), posDist(gen));
-	}
-	for (unsigned int i = 0; i < rotAL; i++) {
-		tpRotArr[i] = glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen));
-	}*/
 
 	stbi_set_flip_vertically_on_load(true);
 
@@ -365,30 +359,33 @@ void DrawObj(void) {
 	}
 
 	generalshaders.use();
-	generalshaders.setVec3("light.position", newpos);
-	generalshaders.setVec3("view_Pos", camera.Position);
-
-	generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
-	generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-	generalshaders.setFloat("material.shininess", 64.0f);
 
 	// draw cube
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -6.0f));
-	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0));
-	model = glm::scale(model, glm::vec3(2.2f, 2.2f, 2.2f));
-	generalshaders.setMat4("view", view);
-	generalshaders.setMat4("model", model);
+	int posAL = sizeof(cPosArr) / sizeof(glm::vec3);
+	for (unsigned int i = 0; i < posAL; i++) {
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, cPosArr[i]);
+		model = glm::rotate(model, glm::radians(45.0f), cRotArr[i]);
+		model = glm::scale(model, glm::vec3(2.2f, 2.2f, 2.2f));
+		generalshaders.setVec3("view_Pos", camera.Position);
+		generalshaders.setMat4("view", view);
+		generalshaders.setMat4("model", model);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texIds[0]);
-	glBindVertexArray(VAOIds[0]);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+		generalshaders.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+		generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
+		generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		generalshaders.setFloat("material.shininess", 64.0f);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texIds[0]);
+		glBindVertexArray(VAOIds[0]);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
 
 	// light cube
-	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
+	/*int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
 	lightshaders.use();
 	model = glm::mat4(1.0f);
 	
@@ -398,7 +395,7 @@ void DrawObj(void) {
 	lightshaders.setMat4("model", model);
 
 	glBindVertexArray(VAOIds[1]);
-	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);*/
 	//lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
 	//lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
 	//// draw triprisms
