@@ -37,7 +37,7 @@ glm::mat4 model = glm::mat4(1.0f); // use this to apply geometric transformation
 glm::mat4 view = glm::mat4(1.0f);
 glm::mat4 projection;
 
-glm::vec3 lightPos = glm::vec3(0.0, 2.0, -10.0);
+glm::vec3 lightPos = glm::vec3(0.0, 2.0, 0.0);
 
 // identity matrix
 const glm::mat4 identity = glm::mat4(1.0f);
@@ -159,7 +159,7 @@ void RenderFunction(GLFWwindow* window)
 	++FrameCount;
 
 	//glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	DrawObj();
 	glfwSwapBuffers(window);
@@ -258,7 +258,7 @@ void CreateObj() {
 	// set camera
 	view = camera.GetViewMatrix();
 
-	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 50.0f);
+	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 150.0f);
 		
 	lightshaders.use();
 	lightshaders.setMat4("view", view);
@@ -345,8 +345,8 @@ void DrawObj(void) {
 	const float radius = 20.0f;
 	float lightX = sin(glfwGetTime()*2) * radius;
 	float lightZ = cos(glfwGetTime()*2) * radius;
-	//glm::vec3 newpos = lightPos + glm::vec3(lightX, 0.0, lightZ);
-	glm::vec3 newpos = lightPos;
+	glm::vec3 newpos = lightPos + glm::vec3(lightX, 0.0, lightZ);
+	//glm::vec3 newpos = lightPos;
 
 	if (camMode) {
 		const float radius = 20.0f;
@@ -371,10 +371,15 @@ void DrawObj(void) {
 		generalshaders.setMat4("view", view);
 		generalshaders.setMat4("model", model);
 
-		generalshaders.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+		//generalshaders.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+		generalshaders.setVec3("light.position", newpos);
 		generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 		generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
 		generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		generalshaders.setFloat("light.constant", 1.0f);
+		generalshaders.setFloat("light.linear", 0.09f);
+		generalshaders.setFloat("light.quadravious", 0.032f);
 
 		generalshaders.setFloat("material.shininess", 64.0f);
 
@@ -385,7 +390,7 @@ void DrawObj(void) {
 	}
 
 	// light cube
-	/*int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
+	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
 	lightshaders.use();
 	model = glm::mat4(1.0f);
 	
@@ -395,7 +400,8 @@ void DrawObj(void) {
 	lightshaders.setMat4("model", model);
 
 	glBindVertexArray(VAOIds[1]);
-	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);*/
+	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+
 	//lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
 	//lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
 	//// draw triprisms
