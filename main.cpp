@@ -342,17 +342,18 @@ void DrawObj(void) {
 	// important: n * ((float)(Now - LastTime) / CLOCKS_PER_SEC
 	LastTime = Now;
 
-	const float radius = 20.0f;
+	const float radius = 30.0f;
 	float lightX = sin(glfwGetTime()*2) * radius;
 	float lightZ = cos(glfwGetTime()*2) * radius;
 	glm::vec3 newpos = lightPos + glm::vec3(lightX, 0.0, lightZ);
 	//glm::vec3 newpos = lightPos;
 
 	if (camMode) {
-		const float radius = 20.0f;
+		/*const float radius = 20.0f;
 		float camX = sin(glfwGetTime()) * radius;
 		float camZ = cos(glfwGetTime()) * radius;
-		view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+		view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));*/
+		view = glm::lookAt(glm::vec3(lightX*0.9f, 0.0f, lightZ * 0.9f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 	else {
 		view = camera.GetViewMatrix();
@@ -372,7 +373,9 @@ void DrawObj(void) {
 		generalshaders.setMat4("model", model);
 
 		//generalshaders.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+
 		generalshaders.setVec3("light.position", newpos);
+		generalshaders.setVec3("light.direction", -newpos);
 		generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 		generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
 		generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
@@ -380,6 +383,7 @@ void DrawObj(void) {
 		generalshaders.setFloat("light.constant", 1.0f);
 		generalshaders.setFloat("light.linear", 0.09f);
 		generalshaders.setFloat("light.quadravious", 0.032f);
+		generalshaders.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
 
 		generalshaders.setFloat("material.shininess", 64.0f);
 

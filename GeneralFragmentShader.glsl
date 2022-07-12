@@ -7,7 +7,8 @@ struct Material {
 }; 
 struct Light {
     vec3 position;
-    // vec3 direction;
+    vec3 direction;
+    float cutoff;
   
     vec3 ambient;
     vec3 diffuse;
@@ -33,7 +34,7 @@ void main()
 {
     
     float distance = length(light.position - ex_Frag);
-    float attenuation = 10.0 / (light.constant + light.linear * distance + light.quadravious * (distance * distance));
+    float attenuation = 15.0 / (light.constant + light.linear * distance + light.quadravious * (distance * distance));
 
     // ambient
     vec3 ambient = light.ambient * texture(material.diffuse, ex_Tex).rgb;
