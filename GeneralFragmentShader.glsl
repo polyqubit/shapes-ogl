@@ -21,7 +21,7 @@ struct PointLight {
     
     float constant;
     float linear;
-    float quadratic;  
+    float quadravious;  
 
     vec3 ambient;
     vec3 diffuse;
@@ -59,8 +59,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 void main()
 {
     // properties
-    vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 norm = normalize(ex_Norm);
+    vec3 viewDir = normalize(view_Pos - ex_Frag);
 
     // phase 1: Directional lighting
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
@@ -70,7 +70,7 @@ void main()
     // phase 3: Spot light
     //result += CalcSpotLight(spotLight, norm, ex_Frag, viewDir);    
     
-    FragColor = vec4(result, 1.0);
+    frag_Color = vec4(result, 1.0);
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
@@ -99,7 +99,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     // attenuation
     float distance    = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + 
-  			     light.quadratic * (distance * distance));    
+  			     light.quadravious * (distance * distance));    
     // combine results
     vec3 ambient  = light.ambient  * vec3(texture(material.diffuse, ex_Tex));
     vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuse, ex_Tex));

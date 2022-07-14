@@ -55,6 +55,8 @@ glm::vec3 cPosArr[50];
 glm::vec3 cRotArr[50];
 //glm::vec3 tpRotArr[750];
 
+glm::vec3 lightPosArr[4];
+
 void Initialize(void);
 //void InitWindow(int, char* []);
 void ResizeFunction(GLFWwindow*, int, int);
@@ -242,6 +244,11 @@ void CreateObj() {
 		cRotArr[i] = glm::vec3(rotDist(gen), rotDist(gen), rotDist(gen));
 	}
 
+	lightPosArr[0] = glm::vec3(0.0f, 0.0f, -20.0f);
+	lightPosArr[1] = glm::vec3(20.0f, 0.0f, 0.0f);
+	lightPosArr[2] = glm::vec3(0.0f, 0.0f, 20.0f);
+	lightPosArr[3] = glm::vec3(-20.0f, 0.0f, 0.0f);
+
 	stbi_set_flip_vertically_on_load(true);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -358,11 +365,46 @@ void DrawObj(void) {
 	else {
 		view = camera.GetViewMatrix();
 	}
+	for (unsigned int i = 0; i < 4; i++) {
+		std::string num = std::to_string(i);
+		generalshaders.setVec3("pointLights[" + num + "].position", lightPosArr[0]);
+		generalshaders.setVec3("pointLights[" + num + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		generalshaders.setVec3("pointLights[" + num + "].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		generalshaders.setVec3("pointLights[" + num + "].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		generalshaders.setFloat("pointLights[" + num + "].constant", 1.0f);
+		generalshaders.setFloat("pointLights[" + num + "].linear", 0.09f);
+		generalshaders.setFloat("pointLights[" + num + "].quadravious", 0.032f);
+	}
+
+	// light cube
+	int posAL = sizeof(lightPosArr) / sizeof(glm::vec3);
+	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
+	lightshaders.use();
+	for (unsigned int i = 0; i < posAL; i++) {
+		model = glm::mat4(1.0f);
+
+		model = glm::translate(model, lightPosArr[i]);
+		model = glm::scale(model, glm::vec3(0.5f));
+		lightshaders.setMat4("view", view);
+		lightshaders.setMat4("model", model);
+
+		glBindVertexArray(VAOIds[1]);
+		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
+	}
+	model = glm::mat4(1.0f);
+
+	model = glm::translate(model, newpos);
+	model = glm::scale(model, glm::vec3(1.5f));
+	lightshaders.setMat4("view", view);
+	lightshaders.setMat4("model", model);
+
+	glBindVertexArray(VAOIds[1]);
+	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
 
 	generalshaders.use();
 
 	// draw cube
-	int posAL = sizeof(cPosArr) / sizeof(glm::vec3);
+	posAL = sizeof(cPosArr) / sizeof(glm::vec3);
 	for (unsigned int i = 0; i < posAL; i++) {
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, cPosArr[i]);
@@ -374,16 +416,17 @@ void DrawObj(void) {
 
 		//generalshaders.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
 
-		generalshaders.setVec3("light.position", newpos);
-		generalshaders.setVec3("light.direction", -newpos);
-		generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-		generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
-		generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		//old light
+		//generalshaders.setVec3("light.position", newpos);
+		//generalshaders.setVec3("light.direction", -newpos);
+		//generalshaders.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		//generalshaders.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken diffuse light a bit
+		//generalshaders.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-		generalshaders.setFloat("light.constant", 1.0f);
-		generalshaders.setFloat("light.linear", 0.09f);
-		generalshaders.setFloat("light.quadravious", 0.032f);
-		generalshaders.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+		//generalshaders.setFloat("light.constant", 1.0f);
+		//generalshaders.setFloat("light.linear", 0.09f);
+		//generalshaders.setFloat("light.quadravious", 0.032f);
+		//generalshaders.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
 
 		generalshaders.setFloat("material.shininess", 64.0f);
 
@@ -392,20 +435,6 @@ void DrawObj(void) {
 		glBindVertexArray(VAOIds[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
-
-	// light cube
-	int lengthI = sizeof(cubeStruct.INDICES) / sizeof(GLuint);
-	lightshaders.use();
-	model = glm::mat4(1.0f);
-	
-	model = glm::translate(model, newpos);
-	model = glm::scale(model, glm::vec3(0.5f));
-	lightshaders.setMat4("view", view);
-	lightshaders.setMat4("model", model);
-
-	glBindVertexArray(VAOIds[1]);
-	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
-
 	//lengthA = sizeof(tpPosArr) / sizeof(glm::vec3);
 	//lengthI = sizeof(tpStruct.INDICES) / sizeof(GLuint);
 	//// draw triprisms
