@@ -367,14 +367,22 @@ void DrawObj(void) {
 	}
 	for (unsigned int i = 0; i < 4; i++) {
 		std::string num = std::to_string(i);
-		generalshaders.setVec3("pointLights[" + num + "].position", lightPosArr[0]);
-		generalshaders.setVec3("pointLights[" + num + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		generalshaders.setVec3("pointLights[" + num + "].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-		generalshaders.setVec3("pointLights[" + num + "].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-		generalshaders.setFloat("pointLights[" + num + "].constant", 1.0f);
-		generalshaders.setFloat("pointLights[" + num + "].linear", 0.09f);
-		generalshaders.setFloat("pointLights[" + num + "].quadravious", 0.032f);
+		generalshaders.setVec3("pointLights["+num+"].position", lightPosArr[i]);
+		generalshaders.setVec3("pointLights["+num+"].ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+		generalshaders.setVec3("pointLights["+num+"].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		generalshaders.setVec3("pointLights["+num+"].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		generalshaders.setFloat("pointLights["+num+"].constant", 1.0f);
+		generalshaders.setFloat("pointLights["+num+"].linear", 0.09f);
+		generalshaders.setFloat("pointLights["+num+"].quadravious", 0.032f);
 	}
+	
+	generalshaders.setVec3("pointLights[4].position", newpos);
+	generalshaders.setVec3("pointLights[4].ambient", glm::vec3(1.0f, 1.0f, 0.05f));
+	generalshaders.setVec3("pointLights[4].diffuse", glm::vec3(5.0f, 5.0f, 0.2f));
+	generalshaders.setVec3("pointLights[4].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	generalshaders.setFloat("pointLights[4].constant", 1.0f);
+	generalshaders.setFloat("pointLights[4].linear", 0.19f);
+	generalshaders.setFloat("pointLights[4].quadravious", 0.032f);
 
 	// light cube
 	int posAL = sizeof(lightPosArr) / sizeof(glm::vec3);
@@ -387,16 +395,18 @@ void DrawObj(void) {
 		model = glm::scale(model, glm::vec3(0.5f));
 		lightshaders.setMat4("view", view);
 		lightshaders.setMat4("model", model);
+		lightshaders.setVec4("color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 		glBindVertexArray(VAOIds[1]);
 		glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
 	}
-	model = glm::mat4(1.0f);
 
+	model = glm::mat4(1.0f);
 	model = glm::translate(model, newpos);
 	model = glm::scale(model, glm::vec3(1.5f));
 	lightshaders.setMat4("view", view);
 	lightshaders.setMat4("model", model);
+	lightshaders.setVec4("color", glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
 
 	glBindVertexArray(VAOIds[1]);
 	glDrawElements(GL_TRIANGLES, lengthI, GL_UNSIGNED_INT, (GLvoid*)0);
